@@ -26,3 +26,6 @@ build/
 
 # Docker
 docker-compose.override.yml
+
+# Claude AI files
+.claude/
