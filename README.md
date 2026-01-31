@@ -219,16 +219,33 @@ npm run start:prod
 Após iniciar, a aplicação estará disponível em:
 
 - **API Backend:** http://localhost:3000
-- **Swagger UI:** http://localhost:3000/api
+- **Swagger UI:** http://localhost:3000/api/docs
 - **Health Check:** http://localhost:3000/health
 
 ---
 
 ## 📚 Documentação da API
 
+### 📸 Interface Swagger
+
+<div align="center">
+
+![Swagger Overview](docs/swagger-overview.png)
+*Visão geral de todos os endpoints disponíveis*
+
+![Swagger Endpoint](docs/swagger-endpoint.png)
+*Exemplo de endpoint com documentação detalhada*
+
+![Swagger Schemas](docs/swagger-schemas.png)
+*Schemas e modelos de dados*
+
+</div>
+
+---
+
 A documentação completa e interativa está disponível via **Swagger UI** em:
 
-👉 **http://localhost:3000/api**
+👉 **http://localhost:3000/api/docs**
 
 ### Principais Endpoints
 
