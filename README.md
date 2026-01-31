@@ -1,4 +1,4 @@
-# 🎯 CRM Público - Sistema de Gestão de Leads e Clientes
+#  CRM Público - Sistema de Gestão de Leads e Clientes
 
 <div align="center">
 
@@ -17,11 +17,11 @@
 
 ---
 
-## 📋 Sobre o Projeto
+##  Sobre o Projeto
 
 Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido com as melhores práticas de arquitetura, qualidade de código e segurança. Ideal para equipes de vendas que precisam gerenciar leads, clientes e acompanhar métricas de conversão.
 
-### ✨ Principais Destaques
+###  Principais Destaques
 
 - ✅ **87.1% de Test Coverage** com 136 testes automatizados
 - ✅ **Arquitetura Modular** seguindo princípios SOLID
@@ -33,7 +33,7 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 
 ---
 
-## 🚀 Tecnologias
+##  Tecnologias
 
 ### Backend
 - **[NestJS 11](https://nestjs.com/)** - Framework Node.js progressivo
@@ -59,38 +59,38 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 
 ---
 
-## 💼 Funcionalidades
+##  Funcionalidades
 
-### 🔐 Autenticação e Autorização
+###  Autenticação e Autorização
 - [x] Login com JWT (access token)
 - [x] Sistema de permissões (Admin, Gerente, Vendedor)
 - [x] Senha criptografada com bcrypt (10 rounds)
 - [x] Guards de autenticação e autorização
 
-### 👥 Gestão de Usuários
+###  Gestão de Usuários
 - [x] CRUD completo de usuários
 - [x] Paginação e filtros
 - [x] Validação de dados
 - [x] Controle de roles/permissões
 
-### 📊 Gestão de Leads
+###  Gestão de Leads
 - [x] Cadastro de leads com origem e status
 - [x] Conversão de lead para cliente
 - [x] Histórico de interações
 - [x] Filtros avançados
 
-### 🏢 Gestão de Clientes
+###  Gestão de Clientes
 - [x] CRUD completo de clientes
 - [x] Vínculo com empresas
 - [x] Histórico de vendas
 - [x] Métricas de faturamento
 
-### 🏭 Gestão de Empresas
+###  Gestão de Empresas
 - [x] Cadastro de empresas
 - [x] CNPJ, endereço e contatos
 - [x] Vínculo com clientes
 
-### 📈 Analytics e Dashboard
+###  Analytics e Dashboard
 - [x] Taxa de conversão de leads
 - [x] Receita por período
 - [x] Distribuição de leads por vendedor
@@ -98,7 +98,7 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - [x] Análise por origem de lead
 - [x] Breakdown por status
 
-### 🔧 Infraestrutura
+###  Infraestrutura
 - [x] Logs estruturados com Winston
 - [x] Health check endpoint
 - [x] Tratamento global de exceções
@@ -107,33 +107,33 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 
 ---
 
-## 🏗️ Arquitetura
+##  Arquitetura
 
 ### Estrutura do Projeto
 ```
 backend/
 ├── src/
 │   ├── modules/              # Módulos da aplicação
-│   │   ├── auth/            # 🔐 Autenticação e autorização
+│   │   ├── auth/            #  Autenticação e autorização
 │   │   │   ├── dto/         # Data Transfer Objects
 │   │   │   ├── strategies/  # Estratégia JWT
 │   │   │   └── guards/      # Guards de proteção
-│   │   ├── users/           # 👤 Gestão de usuários
-│   │   ├── leads/           # 📊 Gestão de leads
-│   │   ├── clients/         # 🏢 Gestão de clientes
-│   │   ├── companies/       # 🏭 Gestão de empresas
-│   │   ├── analytics/       # 📈 Dashboard e métricas
-│   │   └── external/        # 🌐 Integrações externas
+│   │   ├── users/           # Gestão de usuários
+│   │   ├── leads/           # Gestão de leads
+│   │   ├── clients/         # Gestão de clientes
+│   │   ├── companies/       # Gestão de empresas
+│   │   ├── analytics/       # Dashboard e métricas
+│   │   └── external/        # Integrações externas
 │   ├── common/              # Utilitários compartilhados
 │   │   ├── decorators/      # Decorators customizados
 │   │   ├── filters/         # Exception filters
 │   │   ├── guards/          # Guards globais
 │   │   ├── interceptors/    # HTTP interceptors
 │   │   └── logger/          # Sistema de logs
-│   ├── config/              # ⚙️ Configurações
-│   └── database/            # 🗄️ Migrations e seeds
-├── test/                    # 🧪 Testes E2E
-└── coverage/                # 📊 Relatórios de coverage
+│   ├── config/              # Configurações
+│   └── database/            # Migrations e seeds
+├── test/                    # Testes E2E
+└── coverage/                #  elatórios de coverage
 ```
 
 ### Padrões Arquiteturais
@@ -147,7 +147,7 @@ backend/
 
 ---
 
-## 🔧 Como Rodar
+##  Como Rodar
 
 ### Pré-requisitos
 
@@ -224,9 +224,9 @@ Após iniciar, a aplicação estará disponível em:
 
 ---
 
-## 📚 Documentação da API
+##  Documentação da API
 
-### 📸 Interface Swagger
+###  Interface Swagger
 
 <div align="center">
 
@@ -245,17 +245,17 @@ Após iniciar, a aplicação estará disponível em:
 
 A documentação completa e interativa está disponível via **Swagger UI** em:
 
-👉 **http://localhost:3000/api/docs**
+ **http://localhost:3000/api/docs**
 
 ### Principais Endpoints
 
-#### 🔐 Autenticação
+####  Autenticação
 ```http
 POST /auth/login
 POST /auth/register
 ```
 
-#### 👥 Usuários
+####  Usuários
 ```http
 GET    /users           # Listar (paginado)
 POST   /users           # Criar
@@ -264,7 +264,7 @@ PATCH  /users/:id       # Atualizar
 DELETE /users/:id       # Deletar
 ```
 
-#### 📊 Leads
+####  Leads
 ```http
 GET    /leads           # Listar (paginado)
 POST   /leads           # Criar
@@ -273,7 +273,7 @@ PATCH  /leads/:id       # Atualizar
 DELETE /leads/:id       # Deletar
 ```
 
-#### 🏢 Clientes
+####  Clientes
 ```http
 GET    /clients         # Listar (paginado)
 POST   /clients         # Criar
@@ -282,7 +282,7 @@ PATCH  /clients/:id     # Atualizar
 DELETE /clients/:id     # Deletar
 ```
 
-#### 🏭 Empresas
+####  Empresas
 ```http
 GET    /companies       # Listar (paginado)
 POST   /companies       # Criar
@@ -291,7 +291,7 @@ PATCH  /companies/:id   # Atualizar
 DELETE /companies/:id   # Deletar
 ```
 
-#### 📈 Analytics
+####  Analytics
 ```http
 GET /analytics/conversion-rate      # Taxa de conversão
 GET /analytics/revenue              # Receita por período
@@ -327,7 +327,7 @@ curl -X POST http://localhost:3000/leads \
 
 ---
 
-## 🧪 Testes
+##  Testes
 
 ### Executar Testes
 ```bash
@@ -348,11 +348,11 @@ npm run test:watch
 
 | Métrica | Valor |
 |---------|-------|
-| **Test Coverage** | **87.1%** ✅ |
-| **Total de Testes** | **136** ✅ |
-| **Test Suites** | **29** ✅ |
-| **TypeScript** | **Strict Mode** ✅ |
-| **ESLint** | **0 Errors** ✅ |
+| **Test Coverage** | **87.1%**  |
+| **Total de Testes** | **136**  |
+| **Test Suites** | **29**  |
+| **TypeScript** | **Strict Mode**  |
+| **ESLint** | **0 Errors**  |
 
 ### Coverage Detalhado por Módulo
 
@@ -369,21 +369,21 @@ npm run test:watch
 
 ---
 
-## 🔒 Segurança
+##  Segurança
 
 ### Medidas Implementadas
 
-- ✅ **Senha Criptografada** - bcrypt com 10 rounds
-- ✅ **JWT Tokens** - Autenticação stateless
-- ✅ **CORS Configurado** - Proteção contra cross-origin attacks
-- ✅ **Validação de Dados** - class-validator em todos os DTOs
-- ✅ **Role-based Access Control** - Guards de autorização
-- ✅ **SQL Injection Protection** - TypeORM com prepared statements
-- ✅ **Rate Limiting** - Proteção contra brute force (próxima versão)
+-  **Senha Criptografada** - bcrypt com 10 rounds
+-  **JWT Tokens** - Autenticação stateless
+-  **CORS Configurado** - Proteção contra cross-origin attacks
+-  **Validação de Dados** - class-validator em todos os DTOs
+-  **Role-based Access Control** - Guards de autorização
+-  **SQL Injection Protection** - TypeORM com prepared statements
+-  **Rate Limiting** - Proteção contra brute force (próxima versão)
 
 ### Variáveis Sensíveis
 
-⚠️ **IMPORTANTE:** Nunca commite o arquivo `.env` com dados reais!
+ **IMPORTANTE:** Nunca commite o arquivo `.env` com dados reais!
 ```bash
 # .gitignore já configurado para:
 .env
@@ -393,7 +393,7 @@ npm run test:watch
 
 ---
 
-## 📊 Monitoramento
+##  Monitoramento
 
 ### Logs
 
@@ -435,9 +435,9 @@ Resposta:
 
 ---
 
-## 🚀 Roadmap
+##  Roadmap
 
-### ✅ Concluído
+###  Concluído
 - [x] Autenticação JWT
 - [x] CRUD completo de todas entidades
 - [x] Dashboard de analytics
@@ -464,26 +464,26 @@ Resposta:
 
 ---
 
-## 👨‍💻 Autor
+##  Autor
 
 **Wesley Robot**
 
 Desenvolvedor Full Stack especializado em Node.js, TypeScript e arquitetura de software.
 
-- 🌐 GitHub: [@wesleyrobot](https://github.com/wesleyrobot)
-- 💼 LinkedIn: [Seu LinkedIn]
-- 📧 Email: seu.email@exemplo.com
-- 🏢 Empresa: Multi360 Tecnologia Ltda
+-  GitHub: [@wesleyrobot](https://github.com/wesleyrobot)
+-  LinkedIn: [Seu LinkedIn]
+-  Email: seu.email@exemplo.com
+-  Empresa: Multi360 Tecnologia Ltda
 
 ---
 
-## 📄 Licença
+##  Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-## 🙏 Agradecimentos
+##  Agradecimentos
 
 - [NestJS](https://nestjs.com/) - Framework incrível
 - [TypeORM](https://typeorm.io/) - ORM poderoso e flexível
@@ -499,6 +499,6 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 [![GitHub Stars](https://img.shields.io/github/stars/wesleyrobot/CRM-PUBLICO-?style=social)](https://github.com/wesleyrobot/CRM-PUBLICO-)
 [![GitHub Forks](https://img.shields.io/github/forks/wesleyrobot/CRM-PUBLICO-?style=social)](https://github.com/wesleyrobot/CRM-PUBLICO-)
 
-Desenvolvido com ❤️ por [Wesley Robot](https://github.com/wesleyrobot)
+Desenvolvido por [Wesley Robot](https://github.com/wesleyrobot)
 
 </div>
