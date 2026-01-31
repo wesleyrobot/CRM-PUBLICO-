@@ -6,14 +6,12 @@ config();
 export const AppDataSource = new DataSource({
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT) || 5432,
+  port: parseInt(process.env.DB_PORT, 10) || 5433,
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
-  database: process.env.DB_DATABASE || 'crm_automation',
-  synchronize: false,
-  logging: process.env.NODE_ENV === 'development',
-  entities: ['src/domains/**/*.entity{.ts,.js}'],
-  migrations: ['src/database/migrations/*{.ts,.js}'],
-  migrationsTableName: 'migrations',
-  subscribers: [],
+  database: process.env.DB_DATABASE || 'crm_db',
+  entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+  migrations: [__dirname + '/migrations/*{.ts,.js}'],
+  synchronize: false, // DESABILITADO para usar migrations
+  logging: false,
 });

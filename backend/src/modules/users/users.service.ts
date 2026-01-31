@@ -1,24 +1,31 @@
-import {
-  Injectable,
-  NotFoundException,
-  ConflictException,
-} from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PaginationDto, PaginatedResult } from '../../common/dto/pagination.dto';
+import { UserResponseDto } from './dto/user-response.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  private toResponseDto(user: User): UserResponseDto {
+    const { senha, ...userWithoutPassword } = user;
+    return userWithoutPassword as UserResponseDto;
+  }
+
+  private toResponseDtoArray(users: User[]): UserResponseDto[] {
+    return users.map(user => this.toResponseDto(user));
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    // Verificar se email já existe
     const existingUser = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
     });
@@ -27,6 +34,7 @@ export class UsersService {
       throw new ConflictException('Email já está em uso');
     }
 
+    // Hash da senha
     const hashedPassword = await bcrypt.hash(createUserDto.senha, 10);
 
     const user = this.usersRepository.create({
@@ -35,14 +43,12 @@ export class UsersService {
     });
 
     const savedUser = await this.usersRepository.save(user);
-
-    // Remove senha do retorno
-    const { senha, ...result } = savedUser;
-    return result as User;
+    return this.toResponseDto(savedUser);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginatedResult<User>> {
-    const { page = 1, limit = 10, search, sortBy = 'criadoEm', sortOrder = 'DESC' } = paginationDto;
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 10, search } = paginationDto;
+    const skip = (page - 1) * limit;
 
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
 
@@ -53,15 +59,12 @@ export class UsersService {
       );
     }
 
-    queryBuilder
-      .orderBy(`user.${sortBy}`, sortOrder)
-      .skip((page - 1) * limit)
-      .take(limit);
+    queryBuilder.orderBy('user.criadoEm', 'DESC').skip(skip).take(limit);
 
-    const [data, total] = await queryBuilder.getManyAndCount();
+    const [users, total] = await queryBuilder.getManyAndCount();
 
     return {
-      data,
+      data: this.toResponseDtoArray(users),
       meta: {
         total,
         page,
@@ -71,57 +74,57 @@ export class UsersService {
     };
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.usersRepository.findOne({
       where: { id },
     });
 
     if (!user) {
-      throw new NotFoundException('Usuário não encontrado');
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    return user;
+    return this.toResponseDto(user);
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({
+    return await this.usersRepository.findOne({
       where: { email },
       select: ['id', 'nome', 'email', 'senha', 'cargo', 'ativo', 'avatar', 'telefone'],
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
 
-    if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingUser = await this.usersRepository.findOne({
-        where: { email: updateUserDto.email },
-      });
-
-      if (existingUser) {
-        throw new ConflictException('Email já está em uso');
-      }
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
+    // Se estiver atualizando a senha, fazer hash
     if (updateUserDto.senha) {
       updateUserDto.senha = await bcrypt.hash(updateUserDto.senha, 10);
     }
 
     Object.assign(user, updateUserDto);
-
-    const savedUser = await this.usersRepository.save(user);
-
-    // Remove senha do retorno
-    const { senha, ...result } = savedUser as User & { senha?: string };
-    return result as User;
+    const updatedUser = await this.usersRepository.save(user);
+    return this.toResponseDto(updatedUser);
   }
 
   async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
+    const user = await this.usersRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+    }
+
     await this.usersRepository.remove(user);
   }
 
-  async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
+  async validatePassword(password: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
   }
 }

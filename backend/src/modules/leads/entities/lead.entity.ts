@@ -7,6 +7,8 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { Company } from '../../companies/entities/company.entity';
+import { User } from '../../users/entities/user.entity';
 
 export type LeadStatus = 'novo' | 'em_contato' | 'qualificado' | 'perdido';
 
@@ -57,4 +59,13 @@ export class Lead {
 
   @UpdateDateColumn({ name: 'atualizado_em' })
   atualizadoEm: Date;
+
+  // Relacionamentos
+  @ManyToOne(() => Company, (company) => company.leads)
+  @JoinColumn({ name: 'empresa_id' })
+  company: Company;
+
+  @ManyToOne(() => User, (user) => user.leads)
+  @JoinColumn({ name: 'responsavel_id' })
+  responsavel: User;
 }

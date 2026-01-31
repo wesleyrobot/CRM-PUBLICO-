@@ -6,6 +6,8 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { Lead } from '../../leads/entities/lead.entity';
+import { Client } from '../../clients/entities/client.entity';
 
 @Entity('empresas')
 export class Company {
@@ -56,4 +58,11 @@ export class Company {
 
   @UpdateDateColumn({ name: 'atualizado_em' })
   atualizadoEm: Date;
+
+  // Relacionamentos
+  @OneToMany(() => Lead, (lead) => lead.company)
+  leads: Lead[];
+
+  @OneToMany(() => Client, (client) => client.company)
+  clients: Client[];
 }

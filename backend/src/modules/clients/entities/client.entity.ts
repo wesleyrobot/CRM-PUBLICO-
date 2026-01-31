@@ -4,7 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Company } from '../../companies/entities/company.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('clientes')
 export class Client {
@@ -49,4 +53,13 @@ export class Client {
 
   @UpdateDateColumn({ name: 'atualizado_em' })
   atualizadoEm: Date;
+
+  // Relacionamentos
+  @ManyToOne(() => Company, (company) => company.clients)
+  @JoinColumn({ name: 'empresa_id' })
+  company: Company;
+
+  @ManyToOne(() => User, (user) => user.clients)
+  @JoinColumn({ name: 'responsavel_id' })
+  responsavel: User;
 }

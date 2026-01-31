@@ -4,7 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Lead } from '../../leads/entities/lead.entity';
+import { Client } from '../../clients/entities/client.entity';
 
 export type UserRole = 'admin' | 'gerente' | 'vendedor';
 
@@ -43,4 +46,11 @@ export class User {
 
   @UpdateDateColumn({ name: 'atualizado_em' })
   atualizadoEm: Date;
+
+  // Relacionamentos
+  @OneToMany(() => Lead, (lead) => lead.responsavel)
+  leads: Lead[];
+
+  @OneToMany(() => Client, (client) => client.responsavel)
+  clients: Client[];
 }
