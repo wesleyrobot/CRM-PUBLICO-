@@ -472,8 +472,8 @@ Resposta:
 Desenvolvedor Full Stack especializado em Node.js, TypeScript e arquitetura de software.
 
 -  GitHub: [@wesleyrobot](https://github.com/wesleyrobot)
--  LinkedIn: [Seu LinkedIn]
--  Email: seu.email@exemplo.com
+-  LinkedIn: www.linkedin.com/in/wesley-costa-27b96636b
+-  Email: wesleymr.robot@gmail.com
 -  Empresa: Multi360 Tecnologia Ltda
 
 ---
