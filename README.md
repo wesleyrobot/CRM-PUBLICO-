@@ -4,6 +4,7 @@
 
 ![Coverage](https://img.shields.io/badge/coverage-87.1%25-brightgreen?style=for-the-badge)
 ![Tests](https://img.shields.io/badge/tests-136%20passing-success?style=for-the-badge)
+![CI](https://github.com/wesleyrobot/CRM-PUBLICO-/actions/workflows/test.yml/badge.svg)
 ![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
