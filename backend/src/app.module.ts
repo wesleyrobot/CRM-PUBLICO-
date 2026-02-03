@@ -15,6 +15,7 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { ExternalModule } from './modules/external/external.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
+import { SearchModule } from './modules/search/search.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
     ClientsModule,
     ExternalModule,
     AnalyticsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [
