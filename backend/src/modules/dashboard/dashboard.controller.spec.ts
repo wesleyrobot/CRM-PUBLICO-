@@ -39,91 +39,108 @@ describe('DashboardController', () => {
 
   describe('getDashboard', () => {
     it('should return complete dashboard data', async () => {
-      const expectedResponse = {
+      const mockResponse = {
         stats: {
-          totals: { leads: 100, clientes: 30, empresas: 20, usuarios: 5 },
-          growth: { leads: 10.5, clientes: 5.2, empresas: 3.1 },
-          conversion: { rate: 30.0, qualified: 30, lost: 10 },
+          totals: { leads: 150, clientes: 45, empresas: 30, usuarios: 10 },
+          growth: { leads: 12.5, clientes: 8.3, empresas: 5.0 },
+          conversion: { rate: 30.0, qualified: 45, lost: 20 },
         },
         timeline: {
           labels: ['01/01', '02/01'],
           leads: [10, 15],
           clientes: [3, 5],
         },
-        byStatus: [{ status: 'novo', count: 50, percentage: 50.0 }],
-        bySegment: [{ segmento: 'Tecnologia', leads: 40, clientes: 15, empresas: 10 }],
-        topUsers: [{ id: 'user-1', nome: 'João', leads: 20, clientes: 8, conversion: 40.0 }],
+        byStatus: [
+          { status: 'novo', count: 50, percentage: 33.3 },
+        ],
+        bySegment: [
+          { segmento: 'Tecnologia', leads: 40, clientes: 15, empresas: 10 },
+        ],
+        topUsers: [
+          { id: 'uuid', nome: 'João', leads: 30, clientes: 12, conversion: 40.0 },
+        ],
         lastRefresh: new Date(),
       };
 
-      mockDashboardService.getDashboard.mockResolvedValue(expectedResponse);
+      mockDashboardService.getDashboard.mockResolvedValue(mockResponse);
 
       const result = await controller.getDashboard({ period: DashboardPeriod.MONTH });
 
-      expect(result).toEqual(expectedResponse);
+      expect(result).toEqual(mockResponse);
       expect(service.getDashboard).toHaveBeenCalledWith({ period: DashboardPeriod.MONTH });
     });
 
-    it('should accept custom date range', async () => {
-      mockDashboardService.getDashboard.mockResolvedValue({});
+    it('should handle custom date range', async () => {
+      const mockResponse = {
+        stats: expect.any(Object),
+        timeline: expect.any(Object),
+        byStatus: [],
+        bySegment: [],
+        topUsers: [],
+        lastRefresh: new Date(),
+      };
+
+      mockDashboardService.getDashboard.mockResolvedValue(mockResponse);
 
       await controller.getDashboard({
         startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        endDate: '2024-01-31',
       });
 
       expect(service.getDashboard).toHaveBeenCalledWith({
         startDate: '2024-01-01',
-        endDate: '2024-12-31',
+        endDate: '2024-01-31',
       });
     });
   });
 
   describe('getStats', () => {
-    it('should return stats only', async () => {
-      const expectedStats = {
-        totals: { leads: 100, clientes: 30, empresas: 20, usuarios: 5 },
-        growth: { leads: 10.5, clientes: 5.2, empresas: 3.1 },
-        conversion: { rate: 30.0, qualified: 30, lost: 10 },
+    it('should return dashboard statistics', async () => {
+      const mockStats = {
+        totals: { leads: 150, clientes: 45, empresas: 30, usuarios: 10 },
+        growth: { leads: 12.5, clientes: 8.3, empresas: 5.0 },
+        conversion: { rate: 30.0, qualified: 45, lost: 20 },
       };
 
-      mockDashboardService.getStats.mockResolvedValue(expectedStats);
+      mockDashboardService.getStats.mockResolvedValue(mockStats);
 
-      const result = await controller.getStats({ period: DashboardPeriod.WEEK });
+      const result = await controller.getStats({ period: DashboardPeriod.MONTH });
 
-      expect(result).toEqual(expectedStats);
+      expect(result).toEqual(mockStats);
+      expect(service.getStats).toHaveBeenCalled();
     });
   });
 
   describe('getTimeline', () => {
     it('should return timeline data', async () => {
-      const expectedTimeline = {
+      const mockTimeline = {
         labels: ['01/01', '02/01', '03/01'],
         leads: [10, 15, 20],
         clientes: [3, 5, 7],
       };
 
-      mockDashboardService.getTimeline.mockResolvedValue(expectedTimeline);
+      mockDashboardService.getTimeline.mockResolvedValue(mockTimeline);
 
-      const result = await controller.getTimeline({ period: DashboardPeriod.MONTH });
+      const result = await controller.getTimeline({ period: DashboardPeriod.WEEK });
 
-      expect(result).toEqual(expectedTimeline);
-      expect(service.getTimeline).toHaveBeenCalledWith(DashboardPeriod.MONTH);
+      expect(result).toEqual(mockTimeline);
+      expect(service.getTimeline).toHaveBeenCalledWith(DashboardPeriod.WEEK);
     });
   });
 
   describe('refreshView', () => {
-    it('should refresh materialized view', async () => {
-      const expectedResponse = {
+    it('should refresh the materialized view', async () => {
+      const mockResult = {
         success: true,
         refreshedAt: new Date(),
       };
 
-      mockDashboardService.refreshMaterializedView.mockResolvedValue(expectedResponse);
+      mockDashboardService.refreshMaterializedView.mockResolvedValue(mockResult);
 
       const result = await controller.refreshView();
 
       expect(result.success).toBe(true);
+      expect(result.refreshedAt).toBeInstanceOf(Date);
       expect(service.refreshMaterializedView).toHaveBeenCalled();
     });
   });

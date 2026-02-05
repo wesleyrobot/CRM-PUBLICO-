@@ -18,6 +18,7 @@ import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SearchModule } from './modules/search/search.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { SchedulerModule } from './modules/scheduler/scheduler.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     SearchModule,
     AuditModule,
     DashboardModule,
+    SchedulerModule,
   ],
   controllers: [AppController],
   providers: [
