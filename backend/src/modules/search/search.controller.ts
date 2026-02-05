@@ -1,5 +1,6 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { SearchService } from './search.service';
 import { SearchDto, SearchResponse } from './dto/search.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -7,13 +8,15 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 @ApiTags('Search')
 @Controller('search')
 @UseGuards(JwtAuthGuard)
+@UseInterceptors(CacheInterceptor)
 @ApiBearerAuth()
 export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
   @Get()
+  @CacheTTL(300000) // 5 minutes cache for search results
   @ApiOperation({
-    summary: 'Busca Full-Text em português',
+    summary: 'Busca Full-Text em português (cached)',
     description: `
       Realiza busca Full-Text Search otimizada para português em leads, clientes e empresas.
 
@@ -23,6 +26,7 @@ export class SearchController {
       - Ranking por relevância
       - Highlight dos termos encontrados
       - Fallback para ILIKE se Full-Text falhar
+      - **Cache de 5 minutos** para melhor performance
 
       **Exemplos de busca:**
       - "João" - busca todos com João no nome

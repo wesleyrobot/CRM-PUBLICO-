@@ -1,5 +1,7 @@
-import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards, UseInterceptors, Inject } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { CACHE_MANAGER, CacheInterceptor } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 import { DashboardService } from './dashboard.service';
 import { DashboardQueryDto, DashboardResponse } from './dto/dashboard.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -9,9 +11,13 @@ import { Roles } from '../../common/decorators/roles.decorator';
 @ApiTags('Dashboard')
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard)
+@UseInterceptors(CacheInterceptor)
 @ApiBearerAuth()
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(
+    private readonly dashboardService: DashboardService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -99,7 +105,7 @@ export class DashboardController {
   @UseGuards(RolesGuard)
   @ApiOperation({
     summary: 'Atualizar view materializada',
-    description: 'Força atualização da view materializada mv_dashboard_stats. Requer role admin.',
+    description: 'Força atualização da view materializada mv_dashboard_stats. Cache expira automaticamente (TTL 15min). Requer role admin.',
   })
   @ApiResponse({
     status: 200,
@@ -113,7 +119,12 @@ export class DashboardController {
   })
   @ApiResponse({ status: 403, description: 'Acesso negado - requer role admin' })
   async refreshView() {
-    return this.dashboardService.refreshMaterializedView();
+    const result = await this.dashboardService.refreshMaterializedView();
+
+    // Note: Cache will expire based on TTL (15 minutes)
+    // Manual cache clear is handled by scheduled cron job
+
+    return result;
   }
 
   private buildDateFilter(query: DashboardQueryDto): string {
