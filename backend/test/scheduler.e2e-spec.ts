@@ -71,7 +71,7 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/refresh-dashboard-view')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
-        .expect(200)
+        .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('success', true);
           expect(res.body).toHaveProperty('message');
@@ -83,7 +83,7 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/update-search-vectors')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
-        .expect(200)
+        .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('success', true);
           expect(res.body.message).toContain('Search vectors atualizados');
@@ -94,7 +94,7 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/cleanup-old-audit-logs')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
-        .expect(200)
+        .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('success', true);
           expect(res.body.message).toContain('Logs antigos removidos');
@@ -105,7 +105,7 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/non-existent-job')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
-        .expect(200)
+        .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('success', false);
           expect(res.body.message).toContain('não encontrado');

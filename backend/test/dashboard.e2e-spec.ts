@@ -146,7 +146,7 @@ describe('Dashboard API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/dashboard/refresh')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
-        .expect(200)
+        .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('success', true);
           expect(res.body).toHaveProperty('refreshedAt');
