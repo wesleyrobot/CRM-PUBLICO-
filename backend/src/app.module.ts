@@ -2,10 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { CacheModule } from '@nestjs/cache-manager';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './common/logger/winston.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { CacheConfigService } from './config/cache.config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
@@ -61,6 +63,10 @@ import { SchedulerModule } from './modules/scheduler/scheduler.module';
     ),
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useClass: CacheConfigService,
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
