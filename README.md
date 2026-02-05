@@ -383,26 +383,18 @@ Após iniciar, a aplicação estará disponível em:
 
 ##  Documentação da API
 
-###  Interface Swagger
-
-<div align="center">
-
-![Swagger Overview](docs/swagger-overview.png)
-*Visão geral de todos os endpoints disponíveis*
-
-![Swagger Endpoint](docs/swagger-endpoint.png)
-*Exemplo de endpoint com documentação detalhada*
-
-![Swagger Schemas](docs/swagger-schemas.png)
-*Schemas e modelos de dados*
-
-</div>
-
----
-
 A documentação completa e interativa está disponível via **Swagger UI** em:
 
  **http://localhost:3000/api/docs**
+
+###  Interface Swagger
+
+A interface Swagger oferece:
+- 📖 **Documentação Interativa** - Teste todos os endpoints diretamente pelo navegador
+- 🔐 **Autenticação JWT** - Sistema de autorização integrado
+- 📋 **Schemas Detalhados** - Modelos de dados com validações
+- 🎯 **Exemplos de Requisição/Resposta** - Para cada endpoint
+- 🧪 **Try it out** - Execute requisições reais na API
 
 ### Principais Endpoints
 
