@@ -3,11 +3,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
+import { AuthHelper, AuthTokens } from './helpers/auth.helper';
 
 describe('Audit API (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
-  let authToken: string;
+  let tokens: AuthTokens;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,6 +28,12 @@ describe('Audit API (e2e)', () => {
 
     dataSource = moduleFixture.get<DataSource>(DataSource);
 
+    // Cria usuários de teste
+    await AuthHelper.createTestUsers(app);
+
+    // Obtém tokens de autenticação
+    tokens = await AuthHelper.getAuthTokens(app);
+
     // Cria alguns registros de auditoria para teste
     try {
       await dataSource.query(`
@@ -39,9 +46,6 @@ describe('Audit API (e2e)', () => {
     } catch (error) {
       // Ignora erro se já existir
     }
-
-    // TODO: Implementar autenticação para obter token
-    // authToken = await getAuthToken();
   });
 
   afterAll(async () => {
@@ -61,7 +65,7 @@ describe('Audit API (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/audit')
         .query({ page: 1, limit: 20 })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           // Should return 401 without auth or 200 with proper auth
           if (res.status === 200) {
@@ -80,7 +84,7 @@ describe('Audit API (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/audit')
         .query({ tabela: 'leads', page: 1, limit: 10 })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(res.body).toHaveProperty('data');
@@ -95,7 +99,7 @@ describe('Audit API (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/audit')
         .query({ acao: 'INSERT', page: 1, limit: 10 })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(res.body).toHaveProperty('data');
@@ -110,7 +114,7 @@ describe('Audit API (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/audit')
         .query({ page: 0, limit: 200 })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           // Should return validation error for invalid params
           expect([400, 401]).toContain(res.status);
@@ -122,7 +126,7 @@ describe('Audit API (e2e)', () => {
     it('should return audit statistics', () => {
       return request(app.getHttpServer())
         .get('/api/audit/stats')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(res.body).toHaveProperty('totalLogs');
@@ -138,7 +142,7 @@ describe('Audit API (e2e)', () => {
     it('should return audit history for a specific registro', () => {
       return request(app.getHttpServer())
         .get('/api/audit/registro/test-uuid-1')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(Array.isArray(res.body)).toBe(true);
@@ -152,7 +156,7 @@ describe('Audit API (e2e)', () => {
     it('should return empty array for non-existent registro', () => {
       return request(app.getHttpServer())
         .get('/api/audit/registro/non-existent-uuid')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(Array.isArray(res.body)).toBe(true);

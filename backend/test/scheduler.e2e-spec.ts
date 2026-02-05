@@ -2,10 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { DataSource } from 'typeorm';
+import { AuthHelper, AuthTokens } from './helpers/auth.helper';
 
 describe('Scheduler API (e2e)', () => {
   let app: INestApplication;
-  let authToken: string;
+  let dataSource: DataSource;
+  let tokens: AuthTokens;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -23,8 +26,13 @@ describe('Scheduler API (e2e)', () => {
     );
     await app.init();
 
-    // TODO: Implementar autenticação para obter token
-    // authToken = await getAuthToken();
+    dataSource = moduleFixture.get<DataSource>(DataSource);
+
+    // Cria usuários de teste
+    await AuthHelper.createTestUsers(app);
+
+    // Obtém tokens de autenticação
+    tokens = await AuthHelper.getAuthTokens(app);
   });
 
   afterAll(async () => {
@@ -35,7 +43,7 @@ describe('Scheduler API (e2e)', () => {
     it('should return list of scheduled jobs', () => {
       return request(app.getHttpServer())
         .get('/api/scheduler/jobs')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(Array.isArray(res.body)).toBe(true);
@@ -62,7 +70,7 @@ describe('Scheduler API (e2e)', () => {
     it('should run refresh-dashboard-view job manually', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/refresh-dashboard-view')
-        // .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect((res) => {
           // Should return 401/403 without admin auth or 200 with admin auth
           if (res.status === 200) {
@@ -78,7 +86,7 @@ describe('Scheduler API (e2e)', () => {
     it('should run update-search-vectors job manually', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/update-search-vectors')
-        // .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(res.body).toHaveProperty('success', true);
@@ -92,7 +100,7 @@ describe('Scheduler API (e2e)', () => {
     it('should run cleanup-old-audit-logs job manually', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/cleanup-old-audit-logs')
-        // .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(res.body).toHaveProperty('success', true);
@@ -106,7 +114,7 @@ describe('Scheduler API (e2e)', () => {
     it('should return error for non-existent job', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/non-existent-job')
-        // .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect((res) => {
           if (res.status === 200) {
             expect(res.body).toHaveProperty('success', false);
@@ -120,7 +128,7 @@ describe('Scheduler API (e2e)', () => {
     it('should require admin role', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/refresh-dashboard-view')
-        // .set('Authorization', `Bearer ${regularUserToken}`)
+        .set('Authorization', `Bearer ${tokens.vendedorToken}`)
         .expect((res) => {
           // Should return 401 or 403 for non-admin users
           expect([401, 403]).toContain(res.status);
@@ -132,7 +140,7 @@ describe('Scheduler API (e2e)', () => {
     it('should have all expected cron jobs registered', () => {
       return request(app.getHttpServer())
         .get('/api/scheduler/jobs')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             const jobNames = res.body.map((j: any) => j.name);
@@ -150,7 +158,7 @@ describe('Scheduler API (e2e)', () => {
     it('should have valid nextRun dates', () => {
       return request(app.getHttpServer())
         .get('/api/scheduler/jobs')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
             res.body.forEach((job: any) => {

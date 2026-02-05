@@ -3,11 +3,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
+import { AuthHelper, AuthTokens } from './helpers/auth.helper';
 
 describe('Dashboard API (e2e)', () => {
   let app: INestApplication;
   let dataSource: DataSource;
-  let authToken: string;
+  let tokens: AuthTokens;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,6 +28,12 @@ describe('Dashboard API (e2e)', () => {
 
     dataSource = moduleFixture.get<DataSource>(DataSource);
 
+    // Cria usuários de teste
+    await AuthHelper.createTestUsers(app);
+
+    // Obtém tokens de autenticação
+    tokens = await AuthHelper.getAuthTokens(app);
+
     // Cria view materializada se não existir
     try {
       await dataSource.query(`
@@ -45,9 +52,6 @@ describe('Dashboard API (e2e)', () => {
     } catch (error) {
       // View já existe
     }
-
-    // TODO: Implementar autenticação para obter token
-    // authToken = await getAuthToken();
   });
 
   afterAll(async () => {
@@ -59,7 +63,7 @@ describe('Dashboard API (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/dashboard')
         .query({ period: 'month' })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('stats');
@@ -82,7 +86,7 @@ describe('Dashboard API (e2e)', () => {
           startDate: '2024-01-01',
           endDate: '2024-01-31',
         })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200);
     });
 
@@ -93,7 +97,7 @@ describe('Dashboard API (e2e)', () => {
         await request(app.getHttpServer())
           .get('/api/dashboard')
           .query({ period })
-          // .set('Authorization', `Bearer ${authToken}`)
+          .set('Authorization', `Bearer ${tokens.gerenteToken}`)
           .expect(200);
       }
     });
@@ -103,7 +107,7 @@ describe('Dashboard API (e2e)', () => {
     it('should return dashboard statistics', () => {
       return request(app.getHttpServer())
         .get('/api/dashboard/stats')
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('totals');
@@ -123,7 +127,7 @@ describe('Dashboard API (e2e)', () => {
       return request(app.getHttpServer())
         .get('/api/dashboard/timeline')
         .query({ period: 'week' })
-        // .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('labels');
@@ -140,10 +144,11 @@ describe('Dashboard API (e2e)', () => {
     it('should refresh materialized view (admin only)', () => {
       return request(app.getHttpServer())
         .post('/api/dashboard/refresh')
-        // .set('Authorization', `Bearer ${adminToken}`)
+        .set('Authorization', `Bearer ${tokens.adminToken}`)
+        .expect(200)
         .expect((res) => {
-          // Should return 401 without auth or 200 with admin auth
-          expect([200, 401, 403]).toContain(res.status);
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body).toHaveProperty('refreshedAt');
         });
     });
   });
