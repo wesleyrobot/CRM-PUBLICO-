@@ -40,11 +40,15 @@ describe('CRM API (e2e)', () => {
   });
 
   describe('Root', () => {
-    it('/api (GET) - should return welcome message', () => {
+    it('/api (GET) - should return API info', () => {
       return request(app.getHttpServer())
         .get('/api')
         .expect(200)
-        .expect('CRM API está funcionando!');
+        .expect((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body).toHaveProperty('docs');
+          expect(res.body).toHaveProperty('health');
+        });
     });
   });
 });

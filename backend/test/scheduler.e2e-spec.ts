@@ -71,15 +71,11 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/refresh-dashboard-view')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
+        .expect(200)
         .expect((res) => {
-          // Should return 401/403 without admin auth or 200 with admin auth
-          if (res.status === 200) {
-            expect(res.body).toHaveProperty('success', true);
-            expect(res.body).toHaveProperty('message');
-            expect(res.body.message).toContain('Dashboard view atualizada');
-          } else {
-            expect([401, 403]).toContain(res.status);
-          }
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain('Dashboard view atualizada');
         });
     });
 
@@ -87,13 +83,10 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/update-search-vectors')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
+        .expect(200)
         .expect((res) => {
-          if (res.status === 200) {
-            expect(res.body).toHaveProperty('success', true);
-            expect(res.body.message).toContain('Search vectors atualizados');
-          } else {
-            expect([401, 403]).toContain(res.status);
-          }
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body.message).toContain('Search vectors atualizados');
         });
     });
 
@@ -101,13 +94,10 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/cleanup-old-audit-logs')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
+        .expect(200)
         .expect((res) => {
-          if (res.status === 200) {
-            expect(res.body).toHaveProperty('success', true);
-            expect(res.body.message).toContain('Logs antigos removidos');
-          } else {
-            expect([401, 403]).toContain(res.status);
-          }
+          expect(res.body).toHaveProperty('success', true);
+          expect(res.body.message).toContain('Logs antigos removidos');
         });
     });
 
@@ -115,13 +105,10 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/non-existent-job')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
+        .expect(200)
         .expect((res) => {
-          if (res.status === 200) {
-            expect(res.body).toHaveProperty('success', false);
-            expect(res.body.message).toContain('não encontrado');
-          } else {
-            expect([401, 403, 404]).toContain(res.status);
-          }
+          expect(res.body).toHaveProperty('success', false);
+          expect(res.body.message).toContain('não encontrado');
         });
     });
 
@@ -129,10 +116,7 @@ describe('Scheduler API (e2e)', () => {
       return request(app.getHttpServer())
         .post('/api/scheduler/run/refresh-dashboard-view')
         .set('Authorization', `Bearer ${tokens.vendedorToken}`)
-        .expect((res) => {
-          // Should return 401 or 403 for non-admin users
-          expect([401, 403]).toContain(res.status);
-        });
+        .expect(403);
     });
   });
 

@@ -14,7 +14,7 @@ export class AppController {
   ) {}
 
   @Public()
-  @Get('api')
+  @Get()
   @ApiOperation({ summary: 'Rota raiz da API' })
   @ApiResponse({ status: 200, description: 'API funcionando' })
   getRoot() {
@@ -26,7 +26,7 @@ export class AppController {
   }
 
   @Public()
-  @Get('api/health')
+  @Get('health')
   @ApiOperation({ summary: 'Health check completo da aplicação' })
   @ApiResponse({ status: 200, description: 'Aplicação saudável' })
   async getHealth() {

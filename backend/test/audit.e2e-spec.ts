@@ -115,10 +115,7 @@ describe('Audit API (e2e)', () => {
         .get('/api/audit')
         .query({ page: 0, limit: 200 })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
-        .expect((res) => {
-          // Should return validation error for invalid params
-          expect([400, 401]).toContain(res.status);
-        });
+        .expect(400);
     });
   });
 
