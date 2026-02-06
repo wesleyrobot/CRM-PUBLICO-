@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Coverage](https://img.shields.io/badge/coverage-94.4%25-brightgreen?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-297%20passing-success?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-304%20passing-success?style=for-the-badge)
 ![CI](https://github.com/wesleyrobot/CRM-PUBLICO-/actions/workflows/test.yml/badge.svg)
 ![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -24,21 +24,24 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 
 ###  Principais Destaques
 
-- ✅ **94.4% de Test Coverage** com 274 testes unitários + **100% E2E (23 testes)**
+- ✅ **94.4% de Test Coverage** com 293 testes unitários + **100% E2E (23 testes)**
+- ✅ **Security Hardening** - Helmet, CORS restritivo, validação forte de senha
 - ✅ **API Versioning** - Versionamento URI-based (v1) com estratégia de deprecação
 - ✅ **Monitoramento** - Sentry error tracking + Prometheus metrics
 - ✅ **CI/CD Completo** com GitHub Actions (4 workflows automáticos)
 - ✅ **Redis Cache** - Performance boost de 70-80% (queries <5ms)
 - ✅ **Arquitetura Modular** seguindo princípios SOLID
-- ✅ **Type Safety** completo com TypeScript strict mode
+- ✅ **Response Padronizado** - Wrapper `{success, data, errorCode, requestId}`
+- ✅ **Request ID Tracking** - Rastreamento de requests via `X-Request-Id`
 - ✅ **Full-Text Search** em português com ranking e highlight
 - ✅ **Auditoria Automática** de todas operações do banco
 - ✅ **Dashboard Otimizado** com Materialized Views PostgreSQL
-- ✅ **Cron Jobs** para manutenção automática do sistema
+- ✅ **Connection Pooling** - PostgreSQL com pool configurável
+- ✅ **Graceful Shutdown** - SIGTERM/SIGINT hooks para containers
 - ✅ **Documentação Interativa** com Swagger UI
 - ✅ **Containerização** completa com Docker + multi-stage build
 - ✅ **Sistema de Logs** estruturado com Winston
-- ✅ **Segurança** com JWT, bcrypt e Role-based Access Control
+- ✅ **Segurança** com JWT, Helmet, bcrypt e RBAC
 - ✅ **Soft Delete** em todas entidades
 
 ---
@@ -69,6 +72,7 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - **[GitHub Actions](https://github.com/features/actions)** - CI/CD Pipeline
 
 ### Segurança
+- **[Helmet](https://helmetjs.github.io/)** - HTTP security headers
 - **[JWT](https://jwt.io/)** - Autenticação stateless
 - **[bcrypt](https://github.com/kelektiv/node.bcrypt.js)** - Hash de senhas
 - **[class-validator](https://github.com/typestack/class-validator)** - Validação de dados
@@ -692,9 +696,9 @@ npm run test:watch
 | **Branch Coverage** | **70.08%** |
 | **Function Coverage** | **91.22%** |
 | **Line Coverage** | **94.69%** |
-| **Testes Unitários** | **274** |
+| **Testes Unitários** | **293** |
 | **Testes E2E** | **23** |
-| **Total de Testes** | **297** |
+| **Total de Testes** | **316** |
 | **TypeScript** | **Strict Mode** |
 | **ESLint** | **0 Errors** |
 
@@ -721,13 +725,17 @@ npm run test:watch
 
 ### Medidas Implementadas
 
--  **Senha Criptografada** - bcrypt com 10 rounds
--  **JWT Tokens** - Autenticação stateless
--  **CORS Configurado** - Proteção contra cross-origin attacks
--  **Validação de Dados** - class-validator em todos os DTOs
+-  **Helmet.js** - Headers HTTP de segurança (CSP, X-Frame-Options, X-Content-Type-Options)
+-  **Senha Forte** - bcrypt com 10 rounds + validação (maiúscula, minúscula, número, 8+ chars)
+-  **JWT Tokens** - Autenticação stateless (validação obrigatória em produção)
+-  **CORS Restritivo** - Whitelist configurável via `CORS_ORIGIN`
+-  **Validação de Dados** - class-validator em todos os DTOs + sanitização
 -  **Role-based Access Control** - Guards de autorização
 -  **SQL Injection Protection** - TypeORM com prepared statements
--  **Rate Limiting** - Proteção contra brute force (próxima versão)
+-  **Rate Limiting** - 3 tiers (short/medium/long) configurável por ambiente
+-  **Request ID Tracking** - Rastreabilidade via header `X-Request-Id`
+-  **Error Codes Padronizados** - Códigos como `UNAUTHORIZED`, `NOT_FOUND`, `CONFLICT`
+-  **Graceful Shutdown** - Shutdown hooks para SIGTERM/SIGINT
 
 ### Variáveis Sensíveis
 
@@ -813,7 +821,7 @@ Resposta:
 - [x] Dashboard de analytics com Materialized Views
 - [x] Sistema de logs estruturado
 - [x] Documentação Swagger completa
-- [x] **94.4% test coverage (274 unitários + 23 E2E = 297 testes)**
+- [x] **94.4% test coverage (293 unitários + 23 E2E = 316 testes)**
 - [x] Containerização Docker completa
 - [x] **Full-Text Search em português com ranking**
 - [x] **Auditoria automática de todas operações**
@@ -825,6 +833,15 @@ Resposta:
 - [x] **API Versioning URI-based (v1) com estratégia de deprecação**
 - [x] **Sentry Error Tracking (captura automática de exceções 5xx)**
 - [x] **Prometheus Metrics (request count, latency, health check)**
+- [x] **Helmet.js - HTTP security headers (CSP, X-Frame-Options)**
+- [x] **CORS Restritivo - Whitelist configurável por ambiente**
+- [x] **Validação forte de senha (maiúscula, minúscula, número, 8+ chars)**
+- [x] **Error codes padronizados (UNAUTHORIZED, NOT_FOUND, CONFLICT)**
+- [x] **Response wrapper padrão ({success, data, requestId, timestamp})**
+- [x] **Request ID tracking via X-Request-Id header**
+- [x] **Connection pooling PostgreSQL (max/min/timeout configurável)**
+- [x] **Graceful shutdown (SIGTERM/SIGINT hooks)**
+- [x] **JWT Secret obrigatório em produção**
 
 ### 🔄 Em Desenvolvimento
 - [ ] Frontend React/Next.js

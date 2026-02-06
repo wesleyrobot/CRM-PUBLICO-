@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { CacheModule } from '@nestjs/cache-manager';
-import { APP_GUARD, APP_FILTER } from '@nestjs/core';
+import { APP_GUARD, APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './common/logger/winston.config';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -22,6 +22,7 @@ import { AuditModule } from './modules/audit/audit.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { ResponseWrapperInterceptor } from './common/interceptors/response-wrapper.interceptor';
 
 @Module({
   imports: [
@@ -81,6 +82,15 @@ import { MetricsModule } from './modules/metrics/metrics.module';
       synchronize: false,
       migrationsRun: false,
       logging: false,
+      // Connection pooling
+      extra: {
+        max: parseInt(process.env.DB_POOL_MAX, 10) || 20,
+        min: parseInt(process.env.DB_POOL_MIN, 10) || 5,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 5000,
+      },
+      retryAttempts: 3,
+      retryDelay: 3000,
     }),
     WinstonModule.forRoot(winstonConfig),
     UsersModule,
@@ -106,6 +116,10 @@ import { MetricsModule } from './modules/metrics/metrics.module';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseWrapperInterceptor,
     },
   ],
 })

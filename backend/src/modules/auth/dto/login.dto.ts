@@ -12,10 +12,10 @@ export class LoginDto {
 
   @ApiProperty({
     description: 'Senha do usuário',
-    example: 'senha123',
-    minLength: 1,
+    example: 'Senha@123',
+    minLength: 6,
   })
   @IsString({ message: 'Senha é obrigatória' })
-  @MinLength(1, { message: 'Senha é obrigatória' })
+  @MinLength(6, { message: 'Senha deve ter no mínimo 6 caracteres' })
   senha: string;
 }

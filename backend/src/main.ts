@@ -3,10 +3,12 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { ConfigService } from '@nestjs/config';
+import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { SentryConfig } from './config/sentry.config';
 import { SentryInterceptor } from './common/interceptors/sentry.interceptor';
 import { MetricsInterceptor } from './common/interceptors/metrics.interceptor';
+import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,8 +18,40 @@ async function bootstrap() {
   const sentryConfig = new SentryConfig(configService);
   sentryConfig.init();
 
+  // Security: Validar JWT_SECRET em produção
+  if (
+    configService.get('NODE_ENV') === 'production' &&
+    !configService.get('JWT_SECRET')
+  ) {
+    throw new Error(
+      'JWT_SECRET must be defined in production environment',
+    );
+  }
+
   // Usar Winston como logger padrão
   app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+
+  // Security: HTTP headers com Helmet
+  app.use(
+    helmet({
+      contentSecurityPolicy:
+        configService.get('NODE_ENV') === 'production' ? undefined : false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
+
+  // Security: CORS restritivo
+  app.enableCors({
+    origin: configService.get<string>('CORS_ORIGIN', '*'),
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+    credentials: true,
+    maxAge: 3600,
+  });
+
+  // Request ID tracking middleware
+  const requestIdMiddleware = new RequestIdMiddleware();
+  app.use(requestIdMiddleware.use.bind(requestIdMiddleware));
 
   // Adiciona interceptores globais
   app.useGlobalInterceptors(
@@ -34,9 +68,6 @@ async function bootstrap() {
     }),
   );
 
-  // Habilita CORS
-  app.enableCors();
-
   // Prefixo global para API
   app.setGlobalPrefix('api');
 
@@ -49,7 +80,8 @@ async function bootstrap() {
   // Configuração do Swagger
   const config = new DocumentBuilder()
     .setTitle('CRM Automation Platform API')
-    .setDescription(`
+    .setDescription(
+      `
       API completa de CRM com automação de marketing e gestão de vendas
 
       **Versionamento:**
@@ -61,7 +93,8 @@ async function bootstrap() {
       - Versões antigas mantidas por 6 meses após nova versão
       - Breaking changes sempre exigem nova versão
       - Novos recursos podem ser adicionados à versão existente
-    `)
+    `,
+    )
     .setVersion('1.0')
     .addTag('auth', 'Autenticação e autorização')
     .addTag('users', 'Gestão de usuários')
@@ -80,6 +113,9 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
+
+  // Graceful shutdown hooks (SIGTERM, SIGINT)
+  app.enableShutdownHooks();
 
   console.log(`🚀 Aplicação rodando em: http://localhost:${port}`);
   console.log(`📚 API v1 disponível em: http://localhost:${port}/api/v1`);

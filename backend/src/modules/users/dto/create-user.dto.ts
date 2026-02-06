@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsIn,
   IsBoolean,
+  Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UserRole } from '../entities/user.entity';
@@ -33,12 +34,17 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    description: 'Senha do usuário',
-    example: 'senha123',
-    minLength: 6,
+    description:
+      'Senha do usuário (mínimo 8 caracteres, deve conter maiúscula, minúscula e número)',
+    example: 'Senha@123',
+    minLength: 8,
   })
   @IsString({ message: 'Senha deve ser uma string' })
-  @MinLength(6, { message: 'Senha deve ter no mínimo 6 caracteres' })
+  @MinLength(8, { message: 'Senha deve ter no mínimo 8 caracteres' })
+  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, {
+    message:
+      'Senha deve conter pelo menos uma letra maiúscula, uma minúscula e um número',
+  })
   senha: string;
 
   @ApiPropertyOptional({
