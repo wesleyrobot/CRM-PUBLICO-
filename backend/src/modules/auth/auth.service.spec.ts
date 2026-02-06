@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { UnauthorizedException } from '@nestjs/common';
@@ -33,11 +34,17 @@ describe('AuthService', () => {
   const mockUsersService = {
     create: jest.fn(),
     findByEmail: jest.fn(),
+    findOne: jest.fn(),
     validatePassword: jest.fn(),
   };
 
   const mockJwtService = {
-    sign: jest.fn(),
+    sign: jest.fn().mockReturnValue('jwt.token.here'),
+    verify: jest.fn(),
+  };
+
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('1h'),
   };
 
   beforeEach(async () => {
@@ -52,6 +59,10 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: mockJwtService,
         },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
@@ -60,6 +71,8 @@ describe('AuthService', () => {
     jwtService = module.get<JwtService>(JwtService);
 
     jest.clearAllMocks();
+    mockJwtService.sign.mockReturnValue('jwt.token.here');
+    mockConfigService.get.mockReturnValue('1h');
   });
 
   it('should be defined', () => {
@@ -67,7 +80,7 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('should create a new user and return access token', async () => {
+    it('should create a new user and return tokens', async () => {
       const createUserDto = {
         nome: 'New User',
         email: 'newuser@example.com',
@@ -77,11 +90,11 @@ describe('AuthService', () => {
 
       const createdUser = { ...mockUser, ...createUserDto };
       mockUsersService.create.mockResolvedValue(createdUser);
-      mockJwtService.sign.mockReturnValue('jwt.token.here');
 
       const result = await service.register(createUserDto);
 
       expect(result.access_token).toEqual('jwt.token.here');
+      expect(result.refresh_token).toEqual('jwt.token.here');
       expect(result.user.id).toEqual(createdUser.id);
       expect(result.user.nome).toEqual(createdUser.nome);
       expect(result.user.email).toEqual(createdUser.email);
@@ -90,7 +103,7 @@ describe('AuthService', () => {
   });
 
   describe('login', () => {
-    it('should return access token for valid credentials', async () => {
+    it('should return tokens for valid credentials', async () => {
       const loginDto = {
         email: 'test@example.com',
         senha: 'password123',
@@ -98,11 +111,11 @@ describe('AuthService', () => {
 
       mockUsersService.findByEmail.mockResolvedValue(mockUser);
       mockUsersService.validatePassword.mockResolvedValue(true);
-      mockJwtService.sign.mockReturnValue('jwt.token.here');
 
       const result = await service.login(loginDto);
 
       expect(result.access_token).toEqual('jwt.token.here');
+      expect(result.refresh_token).toEqual('jwt.token.here');
       expect(mockUsersService.validatePassword).toHaveBeenCalledWith('password123', mockUser.senha);
     });
 
@@ -140,6 +153,63 @@ describe('AuthService', () => {
       mockUsersService.validatePassword.mockResolvedValue(true);
 
       await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('refreshToken', () => {
+    it('should return new tokens for valid refresh token', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: mockUser.id,
+        type: 'refresh',
+      });
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+
+      const result = await service.refreshToken('valid.refresh.token');
+
+      expect(result.access_token).toBeDefined();
+      expect(result.refresh_token).toBeDefined();
+      expect(result.user.id).toEqual(mockUser.id);
+    });
+
+    it('should throw UnauthorizedException for invalid token type', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: mockUser.id,
+        type: 'access',
+      });
+
+      await expect(service.refreshToken('invalid.token')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException for inactive user', async () => {
+      mockJwtService.verify.mockReturnValue({
+        sub: mockUser.id,
+        type: 'refresh',
+      });
+      const inactiveUser = { ...mockUser, ativo: false };
+      mockUsersService.findOne.mockResolvedValue(inactiveUser);
+
+      await expect(service.refreshToken('valid.refresh.token')).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw UnauthorizedException for expired token', async () => {
+      mockJwtService.verify.mockImplementation(() => {
+        throw new Error('jwt expired');
+      });
+
+      await expect(service.refreshToken('expired.token')).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('getProfile', () => {
+    it('should return user profile', async () => {
+      mockUsersService.findOne.mockResolvedValue(mockUser);
+
+      const result = await service.getProfile(mockUser.id);
+
+      expect(result.id).toEqual(mockUser.id);
+      expect(result.nome).toEqual(mockUser.nome);
+      expect(result.email).toEqual(mockUser.email);
+      expect(result.cargo).toEqual(mockUser.cargo);
     });
   });
 });

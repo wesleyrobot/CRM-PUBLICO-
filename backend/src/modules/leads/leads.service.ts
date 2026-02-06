@@ -7,7 +7,8 @@ import { Repository } from 'typeorm';
 import { Lead } from './entities/lead.entity';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
-import { PaginationDto, PaginatedResult } from '../../common/dto/pagination.dto';
+import { LeadFilterDto } from './dto/lead-filter.dto';
+import { PaginatedResult } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class LeadsService {
@@ -21,8 +22,8 @@ export class LeadsService {
     return this.leadsRepository.save(lead);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginatedResult<Lead>> {
-    const { page = 1, limit = 10, search, sortBy = 'criadoEm', sortOrder = 'DESC' } = paginationDto;
+  async findAll(filterDto: LeadFilterDto): Promise<PaginatedResult<Lead>> {
+    const { page = 1, limit = 10, search, sortBy = 'criadoEm', sortOrder = 'DESC', status } = filterDto;
 
     const queryBuilder = this.leadsRepository.createQueryBuilder('lead');
 
@@ -31,6 +32,10 @@ export class LeadsService {
         'lead.nome ILIKE :search OR lead.email ILIKE :search OR lead.telefone ILIKE :search',
         { search: `%${search}%` },
       );
+    }
+
+    if (status) {
+      queryBuilder.andWhere('lead.status = :status', { status });
     }
 
     queryBuilder

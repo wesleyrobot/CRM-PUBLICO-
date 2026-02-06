@@ -7,7 +7,8 @@ import { Repository } from 'typeorm';
 import { Client } from './entities/client.entity';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
-import { PaginationDto, PaginatedResult } from '../../common/dto/pagination.dto';
+import { ClientFilterDto } from './dto/client-filter.dto';
+import { PaginatedResult } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class ClientsService {
@@ -21,8 +22,8 @@ export class ClientsService {
     return this.clientsRepository.save(client);
   }
 
-  async findAll(paginationDto: PaginationDto): Promise<PaginatedResult<Client>> {
-    const { page = 1, limit = 10, search, sortBy = 'criadoEm', sortOrder = 'DESC' } = paginationDto;
+  async findAll(filterDto: ClientFilterDto): Promise<PaginatedResult<Client>> {
+    const { page = 1, limit = 10, search, sortBy = 'criadoEm', sortOrder = 'DESC', ativo } = filterDto;
 
     const queryBuilder = this.clientsRepository.createQueryBuilder('client');
 
@@ -31,6 +32,10 @@ export class ClientsService {
         'client.nome ILIKE :search OR client.email ILIKE :search OR client.telefone ILIKE :search',
         { search: `%${search}%` },
       );
+    }
+
+    if (ativo !== undefined) {
+      queryBuilder.andWhere('client.ativo = :ativo', { ativo });
     }
 
     queryBuilder
