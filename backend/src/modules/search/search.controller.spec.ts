@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { SearchController } from './search.controller';
 import { SearchService } from './search.service';
 import { SearchEntity } from './dto/search.dto';
@@ -11,6 +12,12 @@ describe('SearchController', () => {
     search: jest.fn(),
   };
 
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [SearchController],
@@ -18,6 +25,10 @@ describe('SearchController', () => {
         {
           provide: SearchService,
           useValue: mockSearchService,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();

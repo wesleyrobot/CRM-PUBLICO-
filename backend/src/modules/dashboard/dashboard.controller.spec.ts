@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
 import { DashboardPeriod } from './dto/dashboard.dto';
@@ -14,6 +15,12 @@ describe('DashboardController', () => {
     refreshMaterializedView: jest.fn(),
   };
 
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [DashboardController],
@@ -21,6 +28,10 @@ describe('DashboardController', () => {
         {
           provide: DashboardService,
           useValue: mockDashboardService,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();
@@ -108,6 +119,57 @@ describe('DashboardController', () => {
 
       expect(result).toEqual(mockStats);
       expect(service.getStats).toHaveBeenCalled();
+    });
+
+    it('should handle custom date range for stats', async () => {
+      mockDashboardService.getStats.mockResolvedValue({});
+
+      await controller.getStats({
+        startDate: '2024-01-01',
+        endDate: '2024-01-31',
+      });
+
+      expect(service.getStats).toHaveBeenCalledWith(
+        expect.stringContaining('2024-01-01'),
+      );
+    });
+
+    it('should handle today period', async () => {
+      mockDashboardService.getStats.mockResolvedValue({});
+      await controller.getStats({ period: 'today' as any });
+      expect(service.getStats).toHaveBeenCalledWith(
+        expect.stringContaining('CURRENT_DATE'),
+      );
+    });
+
+    it('should handle week period', async () => {
+      mockDashboardService.getStats.mockResolvedValue({});
+      await controller.getStats({ period: DashboardPeriod.WEEK });
+      expect(service.getStats).toHaveBeenCalledWith(
+        expect.stringContaining('week'),
+      );
+    });
+
+    it('should handle quarter period', async () => {
+      mockDashboardService.getStats.mockResolvedValue({});
+      await controller.getStats({ period: 'quarter' as any });
+      expect(service.getStats).toHaveBeenCalledWith(
+        expect.stringContaining('quarter'),
+      );
+    });
+
+    it('should handle year period', async () => {
+      mockDashboardService.getStats.mockResolvedValue({});
+      await controller.getStats({ period: 'year' as any });
+      expect(service.getStats).toHaveBeenCalledWith(
+        expect.stringContaining('year'),
+      );
+    });
+
+    it('should handle all/default period', async () => {
+      mockDashboardService.getStats.mockResolvedValue({});
+      await controller.getStats({ period: 'all' as any });
+      expect(service.getStats).toHaveBeenCalledWith('');
     });
   });
 

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
@@ -17,6 +17,10 @@ describe('Dashboard API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -58,10 +62,10 @@ describe('Dashboard API (e2e)', () => {
     await app.close();
   });
 
-  describe('GET /api/dashboard', () => {
+  describe('GET /api/v1/dashboard', () => {
     it('should return complete dashboard data', () => {
       return request(app.getHttpServer())
-        .get('/api/dashboard')
+        .get('/api/v1/dashboard')
         .query({ period: 'month' })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200)
@@ -82,7 +86,7 @@ describe('Dashboard API (e2e)', () => {
     it.skip('should accept custom date range', () => {
       // TODO: Fix date filter SQL query
       return request(app.getHttpServer())
-        .get('/api/dashboard')
+        .get('/api/v1/dashboard')
         .query({
           startDate: '2024-01-01',
           endDate: '2024-01-31',
@@ -94,7 +98,7 @@ describe('Dashboard API (e2e)', () => {
     it('should accept different periods', async () => {
       // Test only one period to avoid rate limiting
       const result = await request(app.getHttpServer())
-        .get('/api/dashboard')
+        .get('/api/v1/dashboard')
         .query({ period: 'week' })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200);
@@ -104,10 +108,10 @@ describe('Dashboard API (e2e)', () => {
     });
   });
 
-  describe('GET /api/dashboard/stats', () => {
+  describe('GET /api/v1/dashboard/stats', () => {
     it('should return dashboard statistics', () => {
       return request(app.getHttpServer())
-        .get('/api/dashboard/stats')
+        .get('/api/v1/dashboard/stats')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200)
         .expect((res) => {
@@ -123,10 +127,10 @@ describe('Dashboard API (e2e)', () => {
     });
   });
 
-  describe('GET /api/dashboard/timeline', () => {
+  describe('GET /api/v1/dashboard/timeline', () => {
     it('should return timeline data', () => {
       return request(app.getHttpServer())
-        .get('/api/dashboard/timeline')
+        .get('/api/v1/dashboard/timeline')
         .query({ period: 'week' })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(200)
@@ -141,10 +145,10 @@ describe('Dashboard API (e2e)', () => {
     });
   });
 
-  describe('POST /api/dashboard/refresh', () => {
+  describe('POST /api/v1/dashboard/refresh', () => {
     it('should refresh materialized view (admin only)', () => {
       return request(app.getHttpServer())
-        .post('/api/dashboard/refresh')
+        .post('/api/v1/dashboard/refresh')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect(201)
         .expect((res) => {

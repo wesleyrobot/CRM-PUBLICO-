@@ -20,8 +20,19 @@ export class AppController {
   getRoot() {
     return {
       message: 'CRM API v1.0',
+      version: 'v1',
       docs: '/api/docs',
-      health: '/api/health',
+      health: '/api/v1/health',
+      endpoints: {
+        auth: '/api/v1/auth',
+        leads: '/api/v1/leads',
+        clients: '/api/v1/clients',
+        companies: '/api/v1/companies',
+        dashboard: '/api/v1/dashboard',
+        search: '/api/v1/search',
+        audit: '/api/v1/audit',
+        scheduler: '/api/v1/scheduler',
+      },
     };
   }
 

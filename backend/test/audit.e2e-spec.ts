@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
@@ -17,6 +17,10 @@ describe('Audit API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -60,10 +64,10 @@ describe('Audit API (e2e)', () => {
     await app.close();
   });
 
-  describe('GET /api/audit', () => {
+  describe('GET /api/v1/audit', () => {
     it('should return paginated audit logs', () => {
       return request(app.getHttpServer())
-        .get('/api/audit')
+        .get('/api/v1/audit')
         .query({ page: 1, limit: 20 })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
@@ -82,7 +86,7 @@ describe('Audit API (e2e)', () => {
 
     it('should filter by tabela', () => {
       return request(app.getHttpServer())
-        .get('/api/audit')
+        .get('/api/v1/audit')
         .query({ tabela: 'leads', page: 1, limit: 10 })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
@@ -97,7 +101,7 @@ describe('Audit API (e2e)', () => {
 
     it('should filter by acao', () => {
       return request(app.getHttpServer())
-        .get('/api/audit')
+        .get('/api/v1/audit')
         .query({ acao: 'INSERT', page: 1, limit: 10 })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
@@ -112,17 +116,17 @@ describe('Audit API (e2e)', () => {
 
     it('should validate pagination params', () => {
       return request(app.getHttpServer())
-        .get('/api/audit')
+        .get('/api/v1/audit')
         .query({ page: 0, limit: 200 })
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect(400);
     });
   });
 
-  describe('GET /api/audit/stats', () => {
+  describe('GET /api/v1/audit/stats', () => {
     it('should return audit statistics', () => {
       return request(app.getHttpServer())
-        .get('/api/audit/stats')
+        .get('/api/v1/audit/stats')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
@@ -135,10 +139,10 @@ describe('Audit API (e2e)', () => {
     });
   });
 
-  describe('GET /api/audit/registro/:registroId', () => {
+  describe('GET /api/v1/audit/registro/:registroId', () => {
     it('should return audit history for a specific registro', () => {
       return request(app.getHttpServer())
-        .get('/api/audit/registro/test-uuid-1')
+        .get('/api/v1/audit/registro/test-uuid-1')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
@@ -152,7 +156,7 @@ describe('Audit API (e2e)', () => {
 
     it('should return empty array for non-existent registro', () => {
       return request(app.getHttpServer())
-        .get('/api/audit/registro/non-existent-uuid')
+        .get('/api/v1/audit/registro/non-existent-uuid')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {

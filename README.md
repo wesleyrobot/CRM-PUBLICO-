@@ -2,8 +2,8 @@
 
 <div align="center">
 
-![Coverage](https://img.shields.io/badge/coverage-87.1%25-brightgreen?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-136%20passing-success?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/coverage-94.4%25-brightgreen?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-297%20passing-success?style=for-the-badge)
 ![CI](https://github.com/wesleyrobot/CRM-PUBLICO-/actions/workflows/test.yml/badge.svg)
 ![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -24,7 +24,9 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 
 ###  Principais Destaques
 
-- ✅ **87.1% de Test Coverage** com 136 testes unitários + **100% E2E (23 testes)**
+- ✅ **94.4% de Test Coverage** com 274 testes unitários + **100% E2E (23 testes)**
+- ✅ **API Versioning** - Versionamento URI-based (v1) com estratégia de deprecação
+- ✅ **Monitoramento** - Sentry error tracking + Prometheus metrics
 - ✅ **CI/CD Completo** com GitHub Actions (4 workflows automáticos)
 - ✅ **Redis Cache** - Performance boost de 70-80% (queries <5ms)
 - ✅ **Arquitetura Modular** seguindo princípios SOLID
@@ -53,12 +55,18 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - **[Docker](https://www.docker.com/)** - Containerização
 - **[Docker Compose](https://docs.docker.com/compose/)** - Orquestração de containers
 
+### Monitoramento & Observabilidade
+- **[Sentry](https://sentry.io/)** - Error tracking e performance monitoring
+- **[Prometheus](https://prometheus.io/)** - Métricas de performance (via prom-client)
+- **[Winston](https://github.com/winstonjs/winston)** - Sistema de logs estruturado
+- **[Redis](https://redis.io/)** - Cache para performance
+
 ### Qualidade & Documentação
-- **[Jest](https://jestjs.io/)** - Framework de testes (87.1% coverage)
+- **[Jest](https://jestjs.io/)** - Framework de testes (94.4% coverage, 297 testes)
 - **[Swagger](https://swagger.io/)** - Documentação interativa da API
-- **[Winston](https://github.com/winstonjs/winston)** - Sistema de logs
 - **[ESLint](https://eslint.org/)** - Linter para qualidade de código
 - **[Prettier](https://prettier.io/)** - Formatação de código
+- **[GitHub Actions](https://github.com/features/actions)** - CI/CD Pipeline
 
 ### Segurança
 - **[JWT](https://jwt.io/)** - Autenticação stateless
@@ -141,6 +149,9 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - [x] Validação de requisições
 - [x] Interceptor de logging HTTP
 - [x] Rate limiting configurável por ambiente
+- [x] API Versioning (URI-based v1)
+- [x] Sentry error tracking (5xx)
+- [x] Prometheus metrics (requests, latency)
 
 ---
 
@@ -162,7 +173,7 @@ Sistema de busca inteligente otimizado para português brasileiro:
 
 **Exemplo de uso:**
 ```bash
-GET /api/search?q=joão tecnologia&page=1&limit=10
+GET /api/v1/search?q=joão tecnologia&page=1&limit=10
 ```
 
 **Resposta:**
@@ -204,10 +215,10 @@ Sistema completo de auditoria que registra automaticamente todas as operações:
 
 **Endpoints:**
 ```bash
-GET /api/audit?page=1&limit=20                    # Listar todos
-GET /api/audit?tabela=leads&acao=UPDATE           # Filtrar por tabela/ação
-GET /api/audit/stats                              # Estatísticas
-GET /api/audit/registro/uuid-123                  # Histórico de um registro
+GET /api/v1/audit?page=1&limit=20                    # Listar todos
+GET /api/v1/audit?tabela=leads&acao=UPDATE           # Filtrar por tabela/ação
+GET /api/v1/audit/stats                              # Estatísticas
+GET /api/v1/audit/registro/uuid-123                  # Histórico de um registro
 ```
 
 ### 📊 Dashboard com Materialized Views
@@ -241,12 +252,12 @@ Sistema de tarefas automatizadas para manutenção do sistema:
 
 **Execução manual (admin):**
 ```bash
-POST /api/scheduler/run/refresh-dashboard-view
+POST /api/v1/scheduler/run/refresh-dashboard-view
 ```
 
 **Listar jobs:**
 ```bash
-GET /api/scheduler/jobs
+GET /api/v1/scheduler/jobs
 ```
 
 **Resposta:**
@@ -258,6 +269,66 @@ GET /api/scheduler/jobs
     "cronExpression": "0 */15 * * * *"
   }
 ]
+```
+
+### 🔀 API Versioning
+
+Sistema de versionamento URI-based para evolução controlada da API:
+
+**Estratégia:**
+- **URI Versioning** - Versão no path da URL (`/api/v1/leads`)
+- **Versão padrão** - `v1` (aplicada automaticamente)
+- **Compatibilidade** - Suporte a múltiplas versões simultâneas
+
+**Exemplo de uso:**
+```bash
+# Versão atual (v1)
+GET /api/v1/leads
+GET /api/v1/clients
+GET /api/v1/dashboard
+
+# Futuras versões
+GET /api/v2/leads  # (quando implementado)
+```
+
+**Benefícios:**
+- Evolução da API sem quebrar clientes existentes
+- Deprecação gradual de versões antigas
+- Documentação versionada no Swagger
+- Estratégia de migração clara
+
+> Consulte [docs/API_VERSIONING.md](docs/API_VERSIONING.md) para a estratégia completa de versionamento.
+
+### 📡 Monitoramento (Sentry + Prometheus)
+
+Sistema completo de observabilidade para monitoramento em produção:
+
+**Sentry - Error Tracking:**
+- Captura automática de exceções não tratadas
+- Filtro inteligente: apenas erros 5xx são reportados (4xx ignorados)
+- Sanitização de dados sensíveis (headers de autorização, senhas)
+- Contexto de usuário e request em cada evento
+- Breadcrumbs para rastreamento de fluxo
+- Configurável por ambiente (sampling rate diferenciado)
+
+**Prometheus - Metrics:**
+- `http_requests_total` - Contador de requests por método/rota/status
+- `http_request_duration_seconds` - Histograma de latência
+- Health check com detalhes de memória e uptime
+- Estatísticas de processo (CPU, heap, RSS)
+
+**Endpoints de monitoramento:**
+```bash
+GET /api/v1/metrics/health    # Status de saúde com métricas de memória
+GET /api/v1/metrics/stats     # Estatísticas detalhadas do processo
+GET /api/v1/metrics           # Info sobre endpoint Prometheus
+GET /metrics                  # Métricas Prometheus (scraping)
+```
+
+**Configuração:**
+```env
+SENTRY_DSN=https://examplePublicKey@o0.ingest.sentry.io/0
+APP_VERSION=1.0.0
 ```
 
 ### ⚡ Redis Cache
@@ -300,7 +371,7 @@ Pipeline completo de integração e entrega contínua com GitHub Actions:
 
 1. **CI Pipeline (ci.yml)**
    - ✅ Lint e TypeScript check
-   - ✅ Testes unitários (87.1% coverage)
+   - ✅ Testes unitários (94.4% coverage - 274 testes)
    - ✅ Testes E2E (100% - 23 testes)
    - ✅ Build da aplicação
    - ✅ Upload de coverage para Codecov
@@ -355,17 +426,19 @@ backend/
 │   │   ├── search/          # 🔍 Full-Text Search
 │   │   ├── audit/           # 📋 Auditoria automática
 │   │   ├── scheduler/       # ⏰ Cron Jobs
+│   │   ├── metrics/         # 📡 Prometheus metrics & health
 │   │   └── external/        # Integrações externas
 │   ├── common/              # Utilitários compartilhados
 │   │   ├── decorators/      # Decorators customizados
 │   │   ├── filters/         # Exception filters
 │   │   ├── guards/          # Guards globais
-│   │   ├── interceptors/    # HTTP interceptors
-│   │   └── logger/          # Sistema de logs
-│   ├── config/              # Configurações
+│   │   ├── interceptors/    # HTTP, Logging, Sentry, Metrics
+│   │   └── logger/          # Sistema de logs (Winston)
+│   ├── config/              # Configurações (Sentry, TypeORM, etc.)
 │   └── database/            # Migrations e seeds
-├── test/                    # Testes E2E
-└── coverage/                #  elatórios de coverage
+├── docs/                    # Documentação (API Versioning, etc.)
+├── test/                    # Testes E2E (23 testes)
+└── coverage/                # Relatórios de coverage
 ```
 
 ### Padrões Arquiteturais
@@ -450,9 +523,10 @@ npm run start:prod
 
 Após iniciar, a aplicação estará disponível em:
 
-- **API Backend:** http://localhost:3000
+- **API Backend:** http://localhost:3000/api/v1
 - **Swagger UI:** http://localhost:3000/api/docs
-- **Health Check:** http://localhost:3000/health
+- **Health Check:** http://localhost:3000/api/v1/metrics/health
+- **Prometheus Metrics:** http://localhost:3000/metrics
 
 ---
 
@@ -483,86 +557,94 @@ A documentação completa e interativa está disponível via **Swagger UI** em:
 
 ####  Autenticação
 ```http
-POST /auth/login
-POST /auth/register
+POST /api/v1/auth/login
+POST /api/v1/auth/register
 ```
 
 ####  Usuários
 ```http
-GET    /users           # Listar (paginado)
-POST   /users           # Criar
-GET    /users/:id       # Buscar por ID
-PATCH  /users/:id       # Atualizar
-DELETE /users/:id       # Deletar
+GET    /api/v1/users           # Listar (paginado)
+POST   /api/v1/users           # Criar
+GET    /api/v1/users/:id       # Buscar por ID
+PATCH  /api/v1/users/:id       # Atualizar
+DELETE /api/v1/users/:id       # Deletar
 ```
 
 ####  Leads
 ```http
-GET    /leads           # Listar (paginado)
-POST   /leads           # Criar
-GET    /leads/:id       # Buscar por ID
-PATCH  /leads/:id       # Atualizar
-DELETE /leads/:id       # Deletar
+GET    /api/v1/leads           # Listar (paginado)
+POST   /api/v1/leads           # Criar
+GET    /api/v1/leads/:id       # Buscar por ID
+PATCH  /api/v1/leads/:id       # Atualizar
+DELETE /api/v1/leads/:id       # Deletar
 ```
 
 ####  Clientes
 ```http
-GET    /clients         # Listar (paginado)
-POST   /clients         # Criar
-GET    /clients/:id     # Buscar por ID
-PATCH  /clients/:id     # Atualizar
-DELETE /clients/:id     # Deletar
+GET    /api/v1/clients         # Listar (paginado)
+POST   /api/v1/clients         # Criar
+GET    /api/v1/clients/:id     # Buscar por ID
+PATCH  /api/v1/clients/:id     # Atualizar
+DELETE /api/v1/clients/:id     # Deletar
 ```
 
 ####  Empresas
 ```http
-GET    /companies       # Listar (paginado)
-POST   /companies       # Criar
-GET    /companies/:id   # Buscar por ID
-PATCH  /companies/:id   # Atualizar
-DELETE /companies/:id   # Deletar
+GET    /api/v1/companies       # Listar (paginado)
+POST   /api/v1/companies       # Criar
+GET    /api/v1/companies/:id   # Buscar por ID
+PATCH  /api/v1/companies/:id   # Atualizar
+DELETE /api/v1/companies/:id   # Deletar
 ```
 
 ####  Analytics
 ```http
-GET /analytics/conversion-rate      # Taxa de conversão
-GET /analytics/revenue              # Receita por período
-GET /analytics/lead-distribution    # Distribuição de leads
-GET /analytics/top-performers       # Top vendedores
-GET /analytics/source-performance   # Performance por origem
-GET /analytics/lead-status         # Breakdown por status
+GET /api/v1/analytics/conversion-rate      # Taxa de conversão
+GET /api/v1/analytics/revenue              # Receita por período
+GET /api/v1/analytics/lead-distribution    # Distribuição de leads
+GET /api/v1/analytics/top-performers       # Top vendedores
+GET /api/v1/analytics/source-performance   # Performance por origem
+GET /api/v1/analytics/lead-status         # Breakdown por status
 ```
 
 ####  Dashboard
 ```http
-GET  /dashboard              # Dashboard completo
-GET  /dashboard/stats        # Estatísticas gerais
-GET  /dashboard/timeline     # Linha do tempo
-POST /dashboard/refresh      # Atualizar view (admin)
+GET  /api/v1/dashboard              # Dashboard completo
+GET  /api/v1/dashboard/stats        # Estatísticas gerais
+GET  /api/v1/dashboard/timeline     # Linha do tempo
+POST /api/v1/dashboard/refresh      # Atualizar view (admin)
 ```
 
 ####  Search (Full-Text)
 ```http
-GET /search?q=termo&page=1&limit=10   # Busca inteligente
+GET /api/v1/search?q=termo&page=1&limit=10   # Busca inteligente
 ```
 
 ####  Auditoria
 ```http
-GET /audit                        # Listar logs (paginado)
-GET /audit/stats                  # Estatísticas de auditoria
-GET /audit/registro/:id           # Histórico de um registro
+GET /api/v1/audit                        # Listar logs (paginado)
+GET /api/v1/audit/stats                  # Estatísticas de auditoria
+GET /api/v1/audit/registro/:id           # Histórico de um registro
 ```
 
 ####  Scheduler (Cron Jobs)
 ```http
-GET  /scheduler/jobs                    # Listar jobs programados
-POST /scheduler/run/:jobName            # Executar job manualmente (admin)
+GET  /api/v1/scheduler/jobs                    # Listar jobs programados
+POST /api/v1/scheduler/run/:jobName            # Executar job manualmente (admin)
+```
+
+####  Metrics & Monitoring
+```http
+GET /api/v1/metrics/health     # Health check com métricas de memória
+GET /api/v1/metrics/stats      # Estatísticas do processo
+GET /api/v1/metrics            # Info sobre Prometheus
+GET /metrics                   # Endpoint Prometheus (scraping)
 ```
 
 ### Exemplo de Requisição
 ```bash
 # Login
-curl -X POST http://localhost:3000/auth/login \
+curl -X POST http://localhost:3000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "admin@crm.com",
@@ -570,7 +652,7 @@ curl -X POST http://localhost:3000/auth/login \
   }'
 
 # Criar Lead (com token)
-curl -X POST http://localhost:3000/leads \
+curl -X POST http://localhost:3000/api/v1/leads \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer SEU_TOKEN_AQUI" \
   -d '{
@@ -606,11 +688,15 @@ npm run test:watch
 
 | Métrica | Valor |
 |---------|-------|
-| **Test Coverage** | **87.1%**  |
-| **Total de Testes** | **136**  |
-| **Test Suites** | **29**  |
-| **TypeScript** | **Strict Mode**  |
-| **ESLint** | **0 Errors**  |
+| **Statement Coverage** | **94.43%** |
+| **Branch Coverage** | **70.08%** |
+| **Function Coverage** | **91.22%** |
+| **Line Coverage** | **94.69%** |
+| **Testes Unitários** | **274** |
+| **Testes E2E** | **23** |
+| **Total de Testes** | **297** |
+| **TypeScript** | **Strict Mode** |
+| **ESLint** | **0 Errors** |
 
 ### Coverage Detalhado por Módulo
 
@@ -620,9 +706,13 @@ npm run test:watch
 | **Auth** | 94.11% | 87.5% | 77.77% | 93.33% |
 | **Clients** | 100% | 75% | 100% | 100% |
 | **Companies** | 93.54% | 55.55% | 100% | 92.85% |
+| **Dashboard** | 95%+ | 85%+ | 100% | 95%+ |
 | **External** | 100% | 50% | 100% | 100% |
 | **Leads** | 100% | 75% | 100% | 100% |
+| **Metrics** | 100% | 100% | 100% | 100% |
+| **Search** | 95%+ | 70%+ | 100% | 95%+ |
 | **Users** | 96.15% | 71.42% | 94.11% | 95.77% |
+| **Common (filters, interceptors, logger)** | 95%+ | 75%+ | 95%+ | 95%+ |
 | **Entities** | **100%** | **100%** | **100%** | **100%** |
 
 ---
@@ -653,7 +743,7 @@ npm run test:watch
 
 ##  Monitoramento
 
-### Logs
+### Logs (Winston)
 
 Sistema de logs estruturado com Winston:
 ```typescript
@@ -667,26 +757,48 @@ Sistema de logs estruturado com Winston:
 }
 ```
 
+### Sentry - Error Tracking
+
+Captura automática de erros em produção:
+- Apenas erros 5xx (server errors) - erros 4xx (client) são ignorados
+- Sanitização automática de headers sensíveis (Authorization, cookies)
+- Breadcrumbs para rastreamento de fluxo de requisições
+- Contexto de usuário autenticado em cada evento
+- Sampling configurável por ambiente (10% prod, 100% dev)
+
+### Prometheus - Metrics
+
+Métricas de performance em tempo real:
+```bash
+GET /api/v1/metrics/health    # Health check com memória e uptime
+GET /api/v1/metrics/stats     # CPU, heap, RSS, PID, Node version
+GET /metrics                  # Endpoint para Prometheus scraping
+```
+
+**Métricas coletadas:**
+- `http_requests_total` - Total de requests (method, route, status_code)
+- `http_request_duration_seconds` - Latência por endpoint
+
 ### Health Check
 
 Endpoint de saúde da aplicação:
 ```bash
-GET /health
+GET /api/v1/metrics/health
 ```
 
 Resposta:
 ```json
 {
-  "status": "ok",
-  "info": {
-    "database": {
-      "status": "up"
-    }
+  "status": "healthy",
+  "timestamp": "2025-01-31T10:30:00.000Z",
+  "uptime": "2h 15m",
+  "memory": {
+    "used": "85 MB",
+    "total": "256 MB",
+    "percentage": 33.2
   },
-  "details": {
-    "database": {
-      "status": "up"
-    }
+  "metrics": {
+    "endpoint": "/api/v1/metrics"
   }
 }
 ```
@@ -701,8 +813,7 @@ Resposta:
 - [x] Dashboard de analytics com Materialized Views
 - [x] Sistema de logs estruturado
 - [x] Documentação Swagger completa
-- [x] 87.1% test coverage unitário
-- [x] **Testes E2E com 100% de aprovação (23 testes)**
+- [x] **94.4% test coverage (274 unitários + 23 E2E = 297 testes)**
 - [x] Containerização Docker completa
 - [x] **Full-Text Search em português com ranking**
 - [x] **Auditoria automática de todas operações**
@@ -711,6 +822,9 @@ Resposta:
 - [x] Rate limiting configurável por ambiente
 - [x] **CI/CD Pipeline completo com GitHub Actions**
 - [x] **Redis Cache para performance (70-80% redução de carga)**
+- [x] **API Versioning URI-based (v1) com estratégia de deprecação**
+- [x] **Sentry Error Tracking (captura automática de exceções 5xx)**
+- [x] **Prometheus Metrics (request count, latency, health check)**
 
 ### 🔄 Em Desenvolvimento
 - [ ] Frontend React/Next.js

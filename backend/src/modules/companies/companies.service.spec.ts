@@ -5,7 +5,7 @@ import { CompaniesService } from './companies.service';
 import { Company } from './entities/company.entity';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, ConflictException } from '@nestjs/common';
 
 describe('CompaniesService', () => {
   let service: CompaniesService;
@@ -83,6 +83,7 @@ describe('CompaniesService', () => {
         segmento: 'Varejo',
       };
 
+      mockRepository.findOne.mockResolvedValue(null);
       mockRepository.create.mockReturnValue(createCompanyDto);
       mockRepository.save.mockResolvedValue(mockCompany);
 
@@ -90,6 +91,19 @@ describe('CompaniesService', () => {
 
       expect(mockRepository.create).toHaveBeenCalledWith(createCompanyDto);
       expect(result).toEqual(mockCompany);
+    });
+
+    it('should throw ConflictException if CNPJ already exists', async () => {
+      const createCompanyDto: CreateCompanyDto = {
+        razaoSocial: 'New Company LTDA',
+        nomeFantasia: 'New Company',
+        cnpj: '12345678901234',
+        segmento: 'Varejo',
+      };
+
+      mockRepository.findOne.mockResolvedValue(mockCompany);
+
+      await expect(service.create(createCompanyDto)).rejects.toThrow(ConflictException);
     });
   });
 
@@ -144,6 +158,34 @@ describe('CompaniesService', () => {
       const result = await service.update('123e4567-e89b-12d3-a456-426614174000', updateCompanyDto);
 
       expect(result.nomeFantasia).toEqual('Updated Company Name');
+    });
+
+    it('should throw ConflictException if updating to existing CNPJ', async () => {
+      const updateCompanyDto = {
+        cnpj: '99999999999999',
+      } as any;
+
+      mockRepository.findOne.mockResolvedValueOnce(mockCompany); // findOne for the company itself
+      mockRepository.findOne.mockResolvedValueOnce({ id: 'other', cnpj: '99999999999999' }); // CNPJ conflict
+
+      await expect(
+        service.update('123e4567-e89b-12d3-a456-426614174000', updateCompanyDto),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    it('should not check CNPJ conflict when no CNPJ in update', async () => {
+      const updateCompanyDto: UpdateCompanyDto = {
+        nomeFantasia: 'No CNPJ check',
+      };
+
+      const updatedCompany = { ...mockCompany, nomeFantasia: 'No CNPJ check' };
+      mockRepository.findOne.mockResolvedValueOnce({ ...mockCompany });
+      mockRepository.save.mockResolvedValue(updatedCompany);
+
+      const result = await service.update('123e4567-e89b-12d3-a456-426614174000', updateCompanyDto);
+      expect(result.nomeFantasia).toEqual('No CNPJ check');
+      // findOne should only be called once (for finding the company, not for CNPJ check)
+      expect(mockRepository.findOne).toHaveBeenCalledTimes(1);
     });
   });
 

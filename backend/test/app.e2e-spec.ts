@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
@@ -13,6 +13,10 @@ describe('CRM API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -28,9 +32,9 @@ describe('CRM API (e2e)', () => {
   });
 
   describe('Health Check', () => {
-    it('/api/health (GET) - should return ok', () => {
+    it('/api/v1/health (GET) - should return ok', () => {
       return request(app.getHttpServer())
-        .get('/api/health')
+        .get('/api/v1/health')
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('status', 'ok');
@@ -40,9 +44,9 @@ describe('CRM API (e2e)', () => {
   });
 
   describe('Root', () => {
-    it('/api (GET) - should return API info', () => {
+    it('/api/v1 (GET) - should return API info', () => {
       return request(app.getHttpServer())
-        .get('/api')
+        .get('/api/v1')
         .expect(200)
         .expect((res) => {
           expect(res.body).toHaveProperty('message');

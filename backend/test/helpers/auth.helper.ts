@@ -44,7 +44,7 @@ export class AuthHelper {
       try {
         // Tenta registrar via API
         const res = await request(app.getHttpServer())
-          .post('/api/auth/register')
+          .post('/api/v1/auth/register')
           .send({
             nome: user.nome,
             email: user.email,
@@ -76,7 +76,7 @@ export class AuthHelper {
 
     // Login como admin
     const adminRes = await request(app.getHttpServer())
-      .post('/api/auth/login')
+      .post('/api/v1/auth/login')
       .send({
         email: TEST_USERS[0].email,
         senha: TEST_USERS[0].senha,
@@ -86,7 +86,7 @@ export class AuthHelper {
 
     // Login como gerente
     const gerenteRes = await request(app.getHttpServer())
-      .post('/api/auth/login')
+      .post('/api/v1/auth/login')
       .send({
         email: TEST_USERS[1].email,
         senha: TEST_USERS[1].senha,
@@ -96,7 +96,7 @@ export class AuthHelper {
 
     // Login como vendedor
     const vendedorRes = await request(app.getHttpServer())
-      .post('/api/auth/login')
+      .post('/api/v1/auth/login')
       .send({
         email: TEST_USERS[2].email,
         senha: TEST_USERS[2].senha,

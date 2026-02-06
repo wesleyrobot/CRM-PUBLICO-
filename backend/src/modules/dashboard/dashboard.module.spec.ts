@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { DataSource } from 'typeorm';
 import { DashboardController } from './dashboard.controller';
 import { DashboardService } from './dashboard.service';
@@ -10,6 +11,12 @@ describe('DashboardModule', () => {
     query: jest.fn(),
   };
 
+  const mockCacheManager = {
+    get: jest.fn(),
+    set: jest.fn(),
+    del: jest.fn(),
+  };
+
   beforeEach(async () => {
     module = await Test.createTestingModule({
       controllers: [DashboardController],
@@ -18,6 +25,10 @@ describe('DashboardModule', () => {
         {
           provide: DataSource,
           useValue: mockDataSource,
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: mockCacheManager,
         },
       ],
     }).compile();

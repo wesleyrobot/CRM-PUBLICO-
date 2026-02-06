@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DataSource } from 'typeorm';
@@ -17,6 +17,10 @@ describe('Scheduler API (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
+    app.enableVersioning({
+      type: VersioningType.URI,
+      defaultVersion: '1',
+    });
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -39,10 +43,10 @@ describe('Scheduler API (e2e)', () => {
     await app.close();
   });
 
-  describe('GET /api/scheduler/jobs', () => {
+  describe('GET /api/v1/scheduler/jobs', () => {
     it('should return list of scheduled jobs', () => {
       return request(app.getHttpServer())
-        .get('/api/scheduler/jobs')
+        .get('/api/v1/scheduler/jobs')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
@@ -66,10 +70,10 @@ describe('Scheduler API (e2e)', () => {
     });
   });
 
-  describe('POST /api/scheduler/run/:jobName', () => {
+  describe('POST /api/v1/scheduler/run/:jobName', () => {
     it('should run refresh-dashboard-view job manually', () => {
       return request(app.getHttpServer())
-        .post('/api/scheduler/run/refresh-dashboard-view')
+        .post('/api/v1/scheduler/run/refresh-dashboard-view')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect(201)
         .expect((res) => {
@@ -81,7 +85,7 @@ describe('Scheduler API (e2e)', () => {
 
     it('should run update-search-vectors job manually', () => {
       return request(app.getHttpServer())
-        .post('/api/scheduler/run/update-search-vectors')
+        .post('/api/v1/scheduler/run/update-search-vectors')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect(201)
         .expect((res) => {
@@ -92,7 +96,7 @@ describe('Scheduler API (e2e)', () => {
 
     it('should run cleanup-old-audit-logs job manually', () => {
       return request(app.getHttpServer())
-        .post('/api/scheduler/run/cleanup-old-audit-logs')
+        .post('/api/v1/scheduler/run/cleanup-old-audit-logs')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect(201)
         .expect((res) => {
@@ -103,7 +107,7 @@ describe('Scheduler API (e2e)', () => {
 
     it('should return error for non-existent job', () => {
       return request(app.getHttpServer())
-        .post('/api/scheduler/run/non-existent-job')
+        .post('/api/v1/scheduler/run/non-existent-job')
         .set('Authorization', `Bearer ${tokens.adminToken}`)
         .expect(201)
         .expect((res) => {
@@ -114,7 +118,7 @@ describe('Scheduler API (e2e)', () => {
 
     it('should require admin role', () => {
       return request(app.getHttpServer())
-        .post('/api/scheduler/run/refresh-dashboard-view')
+        .post('/api/v1/scheduler/run/refresh-dashboard-view')
         .set('Authorization', `Bearer ${tokens.vendedorToken}`)
         .expect(403);
     });
@@ -123,7 +127,7 @@ describe('Scheduler API (e2e)', () => {
   describe('Cron Jobs Integration', () => {
     it('should have all expected cron jobs registered', () => {
       return request(app.getHttpServer())
-        .get('/api/scheduler/jobs')
+        .get('/api/v1/scheduler/jobs')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
@@ -141,7 +145,7 @@ describe('Scheduler API (e2e)', () => {
 
     it('should have valid nextRun dates', () => {
       return request(app.getHttpServer())
-        .get('/api/scheduler/jobs')
+        .get('/api/v1/scheduler/jobs')
         .set('Authorization', `Bearer ${tokens.gerenteToken}`)
         .expect((res) => {
           if (res.status === 200) {
