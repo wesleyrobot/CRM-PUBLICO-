@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Coverage](https://img.shields.io/badge/coverage-94.4%25-brightgreen?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-304%20passing-success?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-323%20passing-success?style=for-the-badge)
 ![CI](https://github.com/wesleyrobot/CRM-PUBLICO-/actions/workflows/test.yml/badge.svg)
 ![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
@@ -24,7 +24,7 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 
 ###  Principais Destaques
 
-- ✅ **94.4% de Test Coverage** com 293 testes unitários + **100% E2E (23 testes)**
+- ✅ **94.4% de Test Coverage** com 300 testes unitários + **100% E2E (23 testes)**
 - ✅ **Security Hardening** - Helmet, CORS restritivo, validação forte de senha
 - ✅ **API Versioning** - Versionamento URI-based (v1) com estratégia de deprecação
 - ✅ **Monitoramento** - Sentry error tracking + Prometheus metrics
@@ -38,7 +38,9 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - ✅ **Dashboard Otimizado** com Materialized Views PostgreSQL
 - ✅ **Connection Pooling** - PostgreSQL com pool configurável
 - ✅ **Graceful Shutdown** - SIGTERM/SIGINT hooks para containers
-- ✅ **Documentação Interativa** com Swagger UI
+- ✅ **Refresh Token** - Renovação automática de tokens (access 1h + refresh 7d)
+- ✅ **Swagger Completo** - Todos os controllers documentados com DTOs tipados
+- ✅ **Filtros por Entidade** - Status (leads), ativo (clients/companies), segmento
 - ✅ **Containerização** completa com Docker + multi-stage build
 - ✅ **Sistema de Logs** estruturado com Winston
 - ✅ **Segurança** com JWT, Helmet, bcrypt e RBAC
@@ -65,7 +67,7 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - **[Redis](https://redis.io/)** - Cache para performance
 
 ### Qualidade & Documentação
-- **[Jest](https://jestjs.io/)** - Framework de testes (94.4% coverage, 297 testes)
+- **[Jest](https://jestjs.io/)** - Framework de testes (94.4% coverage, 300 testes)
 - **[Swagger](https://swagger.io/)** - Documentação interativa da API
 - **[ESLint](https://eslint.org/)** - Linter para qualidade de código
 - **[Prettier](https://prettier.io/)** - Formatação de código
@@ -82,10 +84,12 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 ##  Funcionalidades
 
 ###  Autenticação e Autorização
-- [x] Login com JWT (access token)
-- [x] Sistema de permissões (Admin, Gerente, Vendedor)
+- [x] Login com JWT (access token + refresh token)
+- [x] Refresh token endpoint (renovação automática)
+- [x] Sistema de permissões RBAC (Admin, Gerente, Vendedor)
 - [x] Senha criptografada com bcrypt (10 rounds)
-- [x] Guards de autenticação e autorização
+- [x] Guards de autenticação em todos os controllers
+- [x] Endpoint `/auth/me` para perfil do usuário autenticado
 
 ###  Gestão de Usuários
 - [x] CRUD completo de usuários
@@ -97,18 +101,21 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - [x] Cadastro de leads com origem e status
 - [x] Conversão de lead para cliente
 - [x] Histórico de interações
-- [x] Filtros avançados
+- [x] Filtros por status (novo, em_contato, qualificado, perdido)
+- [x] Proteção com JWT + Roles (admin, gerente, vendedor)
 
 ###  Gestão de Clientes
 - [x] CRUD completo de clientes
 - [x] Vínculo com empresas
-- [x] Histórico de vendas
-- [x] Métricas de faturamento
+- [x] Filtro por status ativo/inativo
+- [x] Proteção com JWT + Roles (admin, gerente, vendedor)
 
 ###  Gestão de Empresas
 - [x] Cadastro de empresas
 - [x] CNPJ, endereço e contatos
 - [x] Vínculo com clientes
+- [x] Filtros por ativo e segmento
+- [x] Proteção com JWT + Roles (admin, gerente)
 
 ###  Analytics e Dashboard
 - [x] Taxa de conversão de leads
@@ -496,7 +503,7 @@ DB_DATABASE=crm_db
 
 # JWT
 JWT_SECRET=seu-secret-super-secreto-aqui
-JWT_EXPIRATION=7d
+JWT_EXPIRATION=1h
 
 # App
 PORT=3000
@@ -561,8 +568,10 @@ A documentação completa e interativa está disponível via **Swagger UI** em:
 
 ####  Autenticação
 ```http
-POST /api/v1/auth/login
-POST /api/v1/auth/register
+POST /api/v1/auth/login           # Login (retorna access_token + refresh_token)
+POST /api/v1/auth/register        # Registrar novo usuário
+POST /api/v1/auth/refresh         # Renovar tokens com refresh_token
+GET  /api/v1/auth/me              # Perfil do usuário autenticado
 ```
 
 ####  Usuários
@@ -574,31 +583,31 @@ PATCH  /api/v1/users/:id       # Atualizar
 DELETE /api/v1/users/:id       # Deletar
 ```
 
-####  Leads
+####  Leads (requer autenticação)
 ```http
-GET    /api/v1/leads           # Listar (paginado)
-POST   /api/v1/leads           # Criar
+GET    /api/v1/leads           # Listar (paginado, filtro: ?status=novo)
+POST   /api/v1/leads           # Criar (roles: admin, gerente, vendedor)
 GET    /api/v1/leads/:id       # Buscar por ID
-PATCH  /api/v1/leads/:id       # Atualizar
-DELETE /api/v1/leads/:id       # Deletar
+PATCH  /api/v1/leads/:id       # Atualizar (roles: admin, gerente, vendedor)
+DELETE /api/v1/leads/:id       # Deletar (roles: admin, gerente)
 ```
 
-####  Clientes
+####  Clientes (requer autenticação)
 ```http
-GET    /api/v1/clients         # Listar (paginado)
-POST   /api/v1/clients         # Criar
+GET    /api/v1/clients         # Listar (paginado, filtro: ?ativo=true)
+POST   /api/v1/clients         # Criar (roles: admin, gerente, vendedor)
 GET    /api/v1/clients/:id     # Buscar por ID
-PATCH  /api/v1/clients/:id     # Atualizar
-DELETE /api/v1/clients/:id     # Deletar
+PATCH  /api/v1/clients/:id     # Atualizar (roles: admin, gerente, vendedor)
+DELETE /api/v1/clients/:id     # Deletar (roles: admin, gerente)
 ```
 
-####  Empresas
+####  Empresas (requer autenticação)
 ```http
-GET    /api/v1/companies       # Listar (paginado)
-POST   /api/v1/companies       # Criar
+GET    /api/v1/companies       # Listar (paginado, filtros: ?ativo=true&segmento=Tecnologia)
+POST   /api/v1/companies       # Criar (roles: admin, gerente)
 GET    /api/v1/companies/:id   # Buscar por ID
-PATCH  /api/v1/companies/:id   # Atualizar
-DELETE /api/v1/companies/:id   # Deletar
+PATCH  /api/v1/companies/:id   # Atualizar (roles: admin, gerente)
+DELETE /api/v1/companies/:id   # Deletar (roles: admin)
 ```
 
 ####  Analytics
@@ -696,9 +705,9 @@ npm run test:watch
 | **Branch Coverage** | **70.08%** |
 | **Function Coverage** | **91.22%** |
 | **Line Coverage** | **94.69%** |
-| **Testes Unitários** | **293** |
+| **Testes Unitários** | **300** |
 | **Testes E2E** | **23** |
-| **Total de Testes** | **316** |
+| **Total de Testes** | **323** |
 | **TypeScript** | **Strict Mode** |
 | **ESLint** | **0 Errors** |
 
@@ -821,7 +830,7 @@ Resposta:
 - [x] Dashboard de analytics com Materialized Views
 - [x] Sistema de logs estruturado
 - [x] Documentação Swagger completa
-- [x] **94.4% test coverage (293 unitários + 23 E2E = 316 testes)**
+- [x] **94.4% test coverage (300 unitários + 23 E2E = 323 testes)**
 - [x] Containerização Docker completa
 - [x] **Full-Text Search em português com ranking**
 - [x] **Auditoria automática de todas operações**
@@ -842,6 +851,12 @@ Resposta:
 - [x] **Connection pooling PostgreSQL (max/min/timeout configurável)**
 - [x] **Graceful shutdown (SIGTERM/SIGINT hooks)**
 - [x] **JWT Secret obrigatório em produção**
+- [x] **Refresh Token (POST /auth/refresh) - access 1h + refresh 7d**
+- [x] **Auth Guards em todos os controllers (leads, clients, companies)**
+- [x] **Response DTOs tipados para todas as entidades**
+- [x] **Swagger completo em todos os controllers**
+- [x] **Filtros por status (leads), ativo (clients/companies), segmento (companies)**
+- [x] **RBAC granular - roles por operação (admin, gerente, vendedor)**
 
 ### 🔄 Em Desenvolvimento
 - [ ] Frontend React/Next.js
