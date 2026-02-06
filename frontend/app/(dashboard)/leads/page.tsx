@@ -89,7 +89,7 @@ export default function LeadsPage() {
     reset,
     formState: { errors },
   } = useForm<LeadFormData>({
-    resolver: zodResolver(leadSchema),
+    resolver: zodResolver(leadSchema) as any,
   });
 
   useEffect(() => {

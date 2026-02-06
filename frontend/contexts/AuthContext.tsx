@@ -78,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     localStorage.setItem('token', response.data.access_token);
+    localStorage.setItem('refresh_token', response.data.refresh_token);
     setUser(response.data.user);
     router.push('/');
   };
@@ -86,12 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const response = await api.post<AuthResponse>('/auth/register', data);
 
     localStorage.setItem('token', response.data.access_token);
+    localStorage.setItem('refresh_token', response.data.refresh_token);
     setUser(response.data.user);
     router.push('/');
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh_token');
     setUser(null);
     router.push('/login');
   };

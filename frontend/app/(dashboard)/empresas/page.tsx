@@ -36,8 +36,8 @@ const companySchema = z.object({
   cidade: z.string().optional(),
   estado: z.string().optional(),
   cep: z.string().optional(),
-  funcionarios: z.coerce.number().optional(),
-  faturamentoAnual: z.coerce.number().optional(),
+  funcionarios: z.number().optional(),
+  faturamentoAnual: z.number().optional(),
 });
 
 type CompanyFormData = z.infer<typeof companySchema>;
@@ -79,7 +79,7 @@ export default function EmpresasPage() {
     reset,
     formState: { errors },
   } = useForm<CompanyFormData>({
-    resolver: zodResolver(companySchema),
+    resolver: zodResolver(companySchema) as any,
   });
 
   // Debounce search

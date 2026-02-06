@@ -3,8 +3,8 @@ import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
-  title: "CRM System",
-  description: "Sistema de CRM desenvolvido com Next.js e NestJS",
+  title: "CRM Público Mr.Robot",
+  description: "Sistema de CRM profissional desenvolvido com Next.js e NestJS",
 };
 
 export default function RootLayout({
