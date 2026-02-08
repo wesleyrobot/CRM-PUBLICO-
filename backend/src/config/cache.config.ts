@@ -19,13 +19,14 @@ export class CacheConfigService implements CacheOptionsFactory {
     }
 
     // Use Redis for development/production
+    const redisPassword = this.configService.get('REDIS_PASSWORD');
     return {
       store: await redisStore({
         socket: {
           host: this.configService.get('REDIS_HOST', 'localhost'),
           port: this.configService.get('REDIS_PORT', 6379),
         },
-        password: this.configService.get('REDIS_PASSWORD'),
+        ...(redisPassword ? { password: redisPassword } : {}),
         ttl: this.configService.get('REDIS_TTL', 900) * 1000, // Convert to milliseconds
       }),
     };

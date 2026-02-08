@@ -12,7 +12,9 @@ import { Button, Input, Card, CardHeader, CardTitle, CardDescription, CardConten
 const registerSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
-  senha: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+  senha: z.string()
+    .min(8, 'Senha deve ter pelo menos 8 caracteres')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Senha deve conter maiúscula, minúscula e número'),
   confirmarSenha: z.string(),
 }).refine((data) => data.senha === data.confirmarSenha, {
   message: 'Senhas não conferem',
@@ -88,7 +90,7 @@ export default function RegisterPage() {
           <Input
             label="Senha"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Mínimo 6 caracteres"
+            placeholder="Mín. 8 caracteres (Ex: Senha@123)"
             leftIcon={<Lock className="h-4 w-4" />}
             rightIcon={
               <button
