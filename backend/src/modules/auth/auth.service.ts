@@ -17,12 +17,12 @@ export class AuthService {
     const payload = { sub: userId, email };
 
     const access_token = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('JWT_EXPIRATION', '1h'),
+      expiresIn: this.configService.get<string>('JWT_EXPIRATION', '1h') as any,
     });
 
     const refresh_token = this.jwtService.sign(
       { sub: userId, type: 'refresh' },
-      { expiresIn: '7d' },
+      { expiresIn: '7d' as any },
     );
 
     return { access_token, refresh_token };

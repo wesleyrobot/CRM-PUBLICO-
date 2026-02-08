@@ -44,111 +44,114 @@ export default function LoginPage() {
 
   return (
     <div className="auth-container">
-      {/* Robot 3D Background */}
-      <div className="robot-container">
-        {mounted && (
-          // @ts-expect-error - spline-viewer is a web component loaded via script
-          <spline-viewer
-            className="robot-3d"
-            url="https://prod.spline.design/Qr2knMM4aKElH8x7/scene.splinecode"
-          />
-        )}
+      {/* Animated Background */}
+      <div className="animated-background">
+        <div className="gradient-orb gradient-orb-1"></div>
+        <div className="gradient-orb gradient-orb-2"></div>
+        <div className="gradient-orb gradient-orb-3"></div>
       </div>
+
+      {/* Header with Logo */}
+      <header className="auth-page-header">
+        <h1 className="auth-page-logo">
+          CRM Público <span className="auth-logo-accent">Mr.Robot</span>
+        </h1>
+      </header>
 
       {/* Content */}
       <div className="auth-content">
-        {/* Header / Logo */}
-        <header className={`auth-header ${mounted ? 'animate-fade-down' : 'opacity-0'}`}>
-          <h1 className="auth-logo">
-            CRM Público <span className="auth-logo-accent">Mr.Robot</span>
-          </h1>
-        </header>
+        {/* Left Section */}
+        <div className="auth-left-section">
+          <h2 className={`auth-hero-title ${mounted ? 'animate-fade-down' : 'opacity-0'}`}>
+            CRM
+          </h2>
 
-        {/* Login Form */}
-        <div className={`auth-card ${mounted ? 'animate-fade-up' : 'opacity-0'}`}>
-          <div className="auth-card-header">
-            <div className="auth-icon-box">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
+          {/* Login Form */}
+          <div className={`auth-card ${mounted ? 'animate-fade-up' : 'opacity-0'}`}>
+            <div className="auth-card-header">
+              <div className="auth-icon-box">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <h2 className="auth-card-title">Acesse sua conta</h2>
+              <p className="auth-card-description">
+                Entre com suas credenciais para continuar
+              </p>
             </div>
-            <h2 className="auth-card-title">Acesse sua conta</h2>
-            <p className="auth-card-description">
-              Entre com suas credenciais para continuar
+
+            <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+              {error && (
+                <div className="auth-error">
+                  <AlertCircle className="auth-error-icon" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Email */}
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="email">Email</label>
+                <div className="auth-input-wrapper">
+                  <Mail className="auth-input-icon" />
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    className={`auth-input ${errors.email ? 'auth-input-error' : ''}`}
+                    {...register('email')}
+                  />
+                </div>
+                {errors.email && (
+                  <span className="auth-field-error">{errors.email.message}</span>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="auth-field">
+                <label className="auth-label" htmlFor="senha">Senha</label>
+                <div className="auth-input-wrapper">
+                  <Lock className="auth-input-icon" />
+                  <input
+                    id="senha"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Sua senha"
+                    className={`auth-input ${errors.senha ? 'auth-input-error' : ''}`}
+                    {...register('senha')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="auth-toggle-password"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {errors.senha && (
+                  <span className="auth-field-error">{errors.senha.message}</span>
+                )}
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="auth-submit"
+              >
+                {isSubmitting ? (
+                  <span className="auth-spinner" />
+                ) : null}
+                {isSubmitting ? 'Entrando...' : 'Entrar'}
+              </button>
+            </form>
+
+            <p className="auth-footer-text">
+              Não tem uma conta?{' '}
+              <Link href="/register" className="auth-link">
+                Criar conta
+              </Link>
             </p>
           </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
-            {error && (
-              <div className="auth-error">
-                <AlertCircle className="auth-error-icon" />
-                <span>{error}</span>
-              </div>
-            )}
-
-            {/* Email */}
-            <div className="auth-field">
-              <label className="auth-label" htmlFor="email">Email</label>
-              <div className="auth-input-wrapper">
-                <Mail className="auth-input-icon" />
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  className={`auth-input ${errors.email ? 'auth-input-error' : ''}`}
-                  {...register('email')}
-                />
-              </div>
-              {errors.email && (
-                <span className="auth-field-error">{errors.email.message}</span>
-              )}
-            </div>
-
-            {/* Password */}
-            <div className="auth-field">
-              <label className="auth-label" htmlFor="senha">Senha</label>
-              <div className="auth-input-wrapper">
-                <Lock className="auth-input-icon" />
-                <input
-                  id="senha"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Sua senha"
-                  className={`auth-input ${errors.senha ? 'auth-input-error' : ''}`}
-                  {...register('senha')}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="auth-toggle-password"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              {errors.senha && (
-                <span className="auth-field-error">{errors.senha.message}</span>
-              )}
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="auth-submit"
-            >
-              {isSubmitting ? (
-                <span className="auth-spinner" />
-              ) : null}
-              {isSubmitting ? 'Entrando...' : 'Entrar'}
-            </button>
-          </form>
-
-          <p className="auth-footer-text">
-            Não tem uma conta?{' '}
-            <Link href="/register" className="auth-link">
-              Criar conta
-            </Link>
-          </p>
         </div>
       </div>
     </div>
