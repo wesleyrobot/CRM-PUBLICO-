@@ -20,7 +20,7 @@
 
 ##  Sobre o Projeto
 
-Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido com as melhores práticas de arquitetura, qualidade de código e segurança. Ideal para equipes de vendas que precisam gerenciar leads, clientes e acompanhar métricas de conversão.
+Sistema profissional de **Customer Relationship Management (CRM)** full-stack desenvolvido com as melhores práticas de arquitetura, qualidade de código e segurança. Combina um backend robusto em NestJS com uma interface moderna em Next.js, ideal para equipes de vendas que precisam gerenciar leads, clientes e acompanhar métricas de conversão em tempo real.
 
 ###  Principais Destaques
 
@@ -55,6 +55,16 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - **[TypeScript 5](https://www.typescriptlang.org/)** - Superset tipado do JavaScript
 - **[PostgreSQL 16](https://www.postgresql.org/)** - Banco de dados relacional
 - **[TypeORM 0.3](https://typeorm.io/)** - ORM para TypeScript/JavaScript
+
+### Frontend
+- **[Next.js 16.1.3](https://nextjs.org/)** - Framework React com Turbopack
+- **[React 19](https://react.dev/)** - Biblioteca JavaScript para interfaces
+- **[TypeScript 5](https://www.typescriptlang.org/)** - Tipagem estática
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - Framework CSS utility-first
+- **[React Hook Form](https://react-hook-form.com/)** - Gerenciamento de formulários
+- **[Zod](https://zod.dev/)** - Validação de schemas TypeScript-first
+- **[Axios](https://axios-http.com/)** - Cliente HTTP com interceptors
+- **[Lucide React](https://lucide.dev/)** - Ícones modernos
 
 ### Infraestrutura
 - **[Docker](https://www.docker.com/)** - Containerização
@@ -163,6 +173,60 @@ Sistema profissional de **Customer Relationship Management (CRM)** desenvolvido 
 - [x] API Versioning (URI-based v1)
 - [x] Sentry error tracking (5xx)
 - [x] Prometheus metrics (requests, latency)
+
+---
+
+## 🎨 Frontend - Interface Moderna
+
+Sistema frontend completo desenvolvido com Next.js 16 e design glassmorphic:
+
+### 🔐 Autenticação
+- **Login/Registro** - Interface glassmorphic moderna com validação
+- **Validação de Senha** - 8 caracteres + maiúscula + minúscula + número (sincronizado com backend)
+- **JWT Integration** - Access token (1h) + Refresh token (7d)
+- **Auto Refresh** - Renovação automática de tokens via Axios interceptors
+- **Proteção de Rotas** - AuthContext com redirecionamento automático
+- **Response Envelope** - Tratamento correto de `{success, data}` do backend
+- **Error Handling** - Mensagens de erro contextualizadas para o usuário
+- **Credenciais de Teste** - `admin@crm.com` / `Admin@123`
+
+### 📊 Dashboard Pipeline CRM
+- **4 Métricas Principais** - Leads, clientes, empresas, conversão
+- **Funil de Vendas** - Visualização interativa com percentuais
+- **Gráfico de Performance** - Desempenho mensal com tooltips
+- **Barra de Metas** - Progresso visual com animações
+- **Agenda do Dia** - Próximos compromissos
+- **Tabela de Leads** - Status e próximas ações
+- **Notas e Comentários** - Área de colaboração
+
+### 🎨 Design System
+- **Glassmorphism** - Efeitos de vidro com backdrop-filter
+- **Gradient Orbs** - Animações flutuantes de fundo
+- **Hover Effects** - Transições suaves e shadow effects
+- **Responsive** - Mobile-first design
+- **Dark Mode Ready** - Preparado para modo escuro
+
+### 🧩 Componentes
+- **Sidebar Completa** - Navegação + ações rápidas + atividades recentes
+- **Cards Interativos** - Hover animations e scale effects
+- **Inputs Modernos** - Glow effects e transições
+- **Buttons Gradient** - Efeito shine com animação
+- **Avatars** - Iniciais com gradientes coloridos
+
+### 🔧 Configurações
+```bash
+# Frontend
+cd frontend
+npm install
+npm run dev
+
+# Acesse em: http://localhost:3001
+```
+
+**Variáveis de Ambiente:**
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
 
 ---
 
@@ -858,8 +922,15 @@ Resposta:
 - [x] **Filtros por status (leads), ativo (clients/companies), segmento (companies)**
 - [x] **RBAC granular - roles por operação (admin, gerente, vendedor)**
 
-### 🔄 Em Desenvolvimento
-- [ ] Frontend React/Next.js
+### ✅ Frontend Concluído
+- [x] **Frontend Next.js 16.1.3** - Interface moderna e responsiva
+- [x] **Autenticação Completa** - Login, registro e refresh token
+- [x] **Dashboard Pipeline CRM** - Métricas, funil de vendas e analytics
+- [x] **Design Glassmorphic** - Interface moderna com efeitos de vidro
+- [x] **Sidebar Interativa** - Ações rápidas e atividades recentes
+- [x] **Integração Total com Backend** - Axios interceptors e tratamento de erros
+- [x] **Validação de Formulários** - React Hook Form + Zod
+- [x] **Tailwind CSS v4** - Estilização moderna e responsiva
 
 ### 📋 Backlog
 - [ ] Notificações por email
