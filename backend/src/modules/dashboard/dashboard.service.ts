@@ -281,4 +281,88 @@ export class DashboardService {
         return { interval: 'month', format: 'Mon/YY', limit: '24 months' };
     }
   }
+
+  async getDetailedDataForExport(dateFilter: string): Promise<{
+    leads: any[];
+    clients: any[];
+    companies: any[];
+  }> {
+    // Query detalhada de leads para export
+    const leadsQuery = `
+      SELECT
+        l.id,
+        l.nome,
+        l.email,
+        l.telefone,
+        l.status,
+        l.origem,
+        l.valor_estimado,
+        l.criado_em,
+        l.atualizado_em,
+        e.nome as empresa,
+        e.segmento,
+        u.nome as responsavel
+      FROM leads l
+      LEFT JOIN empresas e ON l.empresa_id = e.id
+      LEFT JOIN usuarios u ON l.responsavel_id = u.id
+      WHERE l.deletado_em IS NULL ${dateFilter ? `AND l.criado_em ${dateFilter}` : ''}
+      ORDER BY l.criado_em DESC
+      LIMIT 1000
+    `;
+
+    // Query detalhada de clientes para export
+    const clientsQuery = `
+      SELECT
+        c.id,
+        c.nome,
+        c.email,
+        c.telefone,
+        c.cargo,
+        c.ativo,
+        c.criado_em,
+        c.atualizado_em,
+        e.nome as empresa,
+        e.segmento,
+        u.nome as responsavel
+      FROM clientes c
+      LEFT JOIN empresas e ON c.empresa_id = e.id
+      LEFT JOIN usuarios u ON c.responsavel_id = u.id
+      WHERE c.deletado_em IS NULL ${dateFilter ? `AND c.criado_em ${dateFilter}` : ''}
+      ORDER BY c.criado_em DESC
+      LIMIT 1000
+    `;
+
+    // Query detalhada de empresas para export
+    const companiesQuery = `
+      SELECT
+        id,
+        nome,
+        cnpj,
+        segmento,
+        ativo,
+        telefone,
+        email,
+        site,
+        criado_em,
+        atualizado_em,
+        (SELECT COUNT(*) FROM leads WHERE empresa_id = empresas.id AND deletado_em IS NULL) as total_leads,
+        (SELECT COUNT(*) FROM clientes WHERE empresa_id = empresas.id AND deletado_em IS NULL) as total_clientes
+      FROM empresas
+      WHERE deletado_em IS NULL ${dateFilter ? `AND criado_em ${dateFilter}` : ''}
+      ORDER BY criado_em DESC
+      LIMIT 1000
+    `;
+
+    const [leads, clients, companies] = await Promise.all([
+      this.dataSource.query(leadsQuery),
+      this.dataSource.query(clientsQuery),
+      this.dataSource.query(companiesQuery),
+    ]);
+
+    return {
+      leads,
+      clients,
+      companies,
+    };
+  }
 }

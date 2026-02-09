@@ -127,6 +127,35 @@ export class DashboardController {
     return result;
   }
 
+  @Get('export')
+  @ApiOperation({
+    summary: 'Exportar dados do dashboard',
+    description: 'Retorna todos os dados do dashboard em formato JSON para processamento externo (ex: geração de Excel via Python).',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Dados exportados em formato JSON',
+  })
+  @ApiResponse({ status: 401, description: 'Não autorizado' })
+  async exportDashboard(@Query() query: DashboardQueryDto) {
+    const data = await this.dashboardService.getDashboard(query);
+
+    // Adiciona dados detalhados de leads e clientes para export
+    const dateFilter = this.buildDateFilter(query);
+    const detailedData = await this.dashboardService.getDetailedDataForExport(dateFilter);
+
+    return {
+      ...data,
+      export: {
+        leads: detailedData.leads,
+        clients: detailedData.clients,
+        companies: detailedData.companies,
+        exportedAt: new Date().toISOString(),
+        period: query.period || 'month',
+      },
+    };
+  }
+
   private buildDateFilter(query: DashboardQueryDto): string {
     if (query.startDate && query.endDate) {
       return `>= '${query.startDate}' AND criado_em <= '${query.endDate}'`;

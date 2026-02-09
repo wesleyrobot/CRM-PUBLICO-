@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Users,
   TrendingUp,
@@ -31,10 +31,13 @@ import {
   Video,
   FileText,
   Sparkles,
+  Download,
+  RefreshCw,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
+import { useDashboard } from '@/hooks/useDashboard';
 
 // Metric Cards Data
 const metrics = [
@@ -1097,6 +1100,20 @@ export default function DashboardPage() {
   const [timeRange, setTimeRange] = useState<'today' | 'week' | 'month' | 'quarter'>('month');
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Connect to backend API
+  const {
+    data: dashboardData,
+    isLoading,
+    error,
+    refresh,
+    exportData,
+    isExporting
+  } = useDashboard({
+    period: timeRange,
+    autoRefresh: true,
+    refreshInterval: 60000, // Refresh every minute
+  });
+
   const currentDate = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long',
     month: 'long',
@@ -1104,10 +1121,15 @@ export default function DashboardPage() {
   });
 
   // Update clock every second
-  useState(() => {
+  useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
-  });
+  }, []);
+
+  // Refresh dashboard when timeRange changes
+  useEffect(() => {
+    refresh();
+  }, [timeRange, refresh]);
 
   const timeString = currentTime.toLocaleTimeString('pt-BR', {
     hour: '2-digit',
@@ -1121,6 +1143,46 @@ export default function DashboardPage() {
     if (hour < 18) return 'Boa tarde';
     return 'Boa noite';
   };
+
+  // Calculate metrics from real data
+  const realMetrics = dashboardData ? [
+    {
+      title: 'Total de Leads',
+      value: dashboardData.stats.totals.leads.toLocaleString('pt-BR'),
+      change: `${dashboardData.stats.growth.leads > 0 ? '+' : ''}${dashboardData.stats.growth.leads.toFixed(1)}%`,
+      subtitle: 'Crescimento no período',
+      isPositive: dashboardData.stats.growth.leads > 0,
+      icon: Users,
+      trend: [45, 52, 48, 60, 68, 72, 78, 85],
+    },
+    {
+      title: 'Total de Clientes',
+      value: dashboardData.stats.totals.clientes.toLocaleString('pt-BR'),
+      change: `${dashboardData.stats.growth.clientes > 0 ? '+' : ''}${dashboardData.stats.growth.clientes.toFixed(1)}%`,
+      subtitle: 'Crescimento no período',
+      isPositive: dashboardData.stats.growth.clientes > 0,
+      icon: Target,
+      trend: [50, 58, 62, 70, 75, 78, 82, 88],
+    },
+    {
+      title: 'Taxa de Conversão',
+      value: `${dashboardData.stats.conversion.rate.toFixed(1)}%`,
+      change: dashboardData.stats.conversion.rate >= 30 ? 'Ótimo' : 'Melhorar',
+      subtitle: `${dashboardData.stats.conversion.qualified} qualificados`,
+      isPositive: dashboardData.stats.conversion.rate >= 30,
+      icon: TrendingUp,
+      trend: [88, 87, 86, 87, 86, 85, 85, 85],
+    },
+    {
+      title: 'Total de Empresas',
+      value: dashboardData.stats.totals.empresas.toLocaleString('pt-BR'),
+      change: `${dashboardData.stats.growth.empresas > 0 ? '+' : ''}${dashboardData.stats.growth.empresas.toFixed(1)}%`,
+      subtitle: 'Crescimento no período',
+      isPositive: dashboardData.stats.growth.empresas > 0,
+      icon: Activity,
+      trend: [65, 72, 68, 80, 85, 78, 90, 88],
+    },
+  ] : metrics;
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -1193,6 +1255,30 @@ export default function DashboardPage() {
             )}>Filtros</span>
           </button>
 
+          <button
+            onClick={refresh}
+            disabled={isLoading}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all border border-border hover:border-primary/50 group disabled:opacity-50"
+            title="Atualizar dados"
+          >
+            <RefreshCw className={cn(
+              "h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors",
+              isLoading && "animate-spin"
+            )} />
+          </button>
+
+          <button
+            onClick={exportData}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted/30 hover:bg-muted/50 transition-all border border-border hover:border-primary/50 group disabled:opacity-50"
+            title="Exportar dados (JSON)"
+          >
+            <Download className={cn(
+              "h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors",
+              isExporting && "animate-bounce"
+            )} />
+          </button>
+
           <div className="text-right">
             <div className="text-3xl font-light text-foreground tabular-nums">{timeString}</div>
             <div className="text-xs text-muted-foreground">{period}</div>
@@ -1232,9 +1318,36 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Loading State */}
+      {isLoading && !dashboardData && (
+        <div className="flex items-center justify-center p-12">
+          <div className="flex flex-col items-center gap-3">
+            <RefreshCw className="h-8 w-8 text-primary animate-spin" />
+            <p className="text-sm text-muted-foreground">Carregando dados do dashboard...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !dashboardData && (
+        <div className="flex items-center justify-center p-12">
+          <div className="flex flex-col items-center gap-3">
+            <XCircle className="h-8 w-8 text-red-500" />
+            <p className="text-sm text-red-500">{error}</p>
+            <button
+              onClick={refresh}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Tentar Novamente
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Metrics Grid with Sparklines */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {metrics.map((metric, index) => (
+        {realMetrics.map((metric, index) => (
           <Card
             key={index}
             className="bg-card border-border hover:border-primary/50 transition-all group cursor-pointer relative overflow-hidden"
