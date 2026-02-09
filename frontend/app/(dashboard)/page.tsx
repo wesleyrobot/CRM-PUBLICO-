@@ -1144,41 +1144,41 @@ export default function DashboardPage() {
     return 'Boa noite';
   };
 
-  // Calculate metrics from real data
-  const realMetrics = dashboardData ? [
+  // Calculate metrics from real data with safe fallbacks
+  const realMetrics = (dashboardData?.stats) ? [
     {
       title: 'Total de Leads',
-      value: dashboardData.stats.totals.leads.toLocaleString('pt-BR'),
-      change: `${dashboardData.stats.growth.leads > 0 ? '+' : ''}${dashboardData.stats.growth.leads.toFixed(1)}%`,
+      value: (dashboardData.stats.totals?.leads ?? 0).toLocaleString('pt-BR'),
+      change: `${(dashboardData.stats.growth?.leads ?? 0) > 0 ? '+' : ''}${(dashboardData.stats.growth?.leads ?? 0).toFixed(1)}%`,
       subtitle: 'Crescimento no período',
-      isPositive: dashboardData.stats.growth.leads > 0,
+      isPositive: (dashboardData.stats.growth?.leads ?? 0) > 0,
       icon: Users,
       trend: [45, 52, 48, 60, 68, 72, 78, 85],
     },
     {
       title: 'Total de Clientes',
-      value: dashboardData.stats.totals.clientes.toLocaleString('pt-BR'),
-      change: `${dashboardData.stats.growth.clientes > 0 ? '+' : ''}${dashboardData.stats.growth.clientes.toFixed(1)}%`,
+      value: (dashboardData.stats.totals?.clientes ?? 0).toLocaleString('pt-BR'),
+      change: `${(dashboardData.stats.growth?.clientes ?? 0) > 0 ? '+' : ''}${(dashboardData.stats.growth?.clientes ?? 0).toFixed(1)}%`,
       subtitle: 'Crescimento no período',
-      isPositive: dashboardData.stats.growth.clientes > 0,
+      isPositive: (dashboardData.stats.growth?.clientes ?? 0) > 0,
       icon: Target,
       trend: [50, 58, 62, 70, 75, 78, 82, 88],
     },
     {
       title: 'Taxa de Conversão',
-      value: `${dashboardData.stats.conversion.rate.toFixed(1)}%`,
-      change: dashboardData.stats.conversion.rate >= 30 ? 'Ótimo' : 'Melhorar',
-      subtitle: `${dashboardData.stats.conversion.qualified} qualificados`,
-      isPositive: dashboardData.stats.conversion.rate >= 30,
+      value: `${(dashboardData.stats.conversion?.rate ?? 0).toFixed(1)}%`,
+      change: (dashboardData.stats.conversion?.rate ?? 0) >= 30 ? 'Ótimo' : 'Melhorar',
+      subtitle: `${dashboardData.stats.conversion?.qualified ?? 0} qualificados`,
+      isPositive: (dashboardData.stats.conversion?.rate ?? 0) >= 30,
       icon: TrendingUp,
       trend: [88, 87, 86, 87, 86, 85, 85, 85],
     },
     {
       title: 'Total de Empresas',
-      value: dashboardData.stats.totals.empresas.toLocaleString('pt-BR'),
-      change: `${dashboardData.stats.growth.empresas > 0 ? '+' : ''}${dashboardData.stats.growth.empresas.toFixed(1)}%`,
+      value: (dashboardData.stats.totals?.empresas ?? 0).toLocaleString('pt-BR'),
+      change: `${(dashboardData.stats.growth?.empresas ?? 0) > 0 ? '+' : ''}${(dashboardData.stats.growth?.empresas ?? 0).toFixed(1)}%`,
       subtitle: 'Crescimento no período',
-      isPositive: dashboardData.stats.growth.empresas > 0,
+      isPositive: (dashboardData.stats.growth?.empresas ?? 0) > 0,
       icon: Activity,
       trend: [65, 72, 68, 80, 85, 78, 90, 88],
     },
