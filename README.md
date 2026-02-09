@@ -190,14 +190,17 @@ Sistema frontend completo desenvolvido com Next.js 16 e design glassmorphic:
 - **Error Handling** - Mensagens de erro contextualizadas para o usuário
 - **Credenciais de Teste** - `admin@crm.com` / `Admin@123`
 
-### 📊 Dashboard Pipeline CRM
-- **4 Métricas Principais** - Leads, clientes, empresas, conversão
-- **Funil de Vendas** - Visualização interativa com percentuais
-- **Gráfico de Performance** - Desempenho mensal com tooltips
-- **Barra de Metas** - Progresso visual com animações
-- **Agenda do Dia** - Próximos compromissos
-- **Tabela de Leads** - Status e próximas ações
-- **Notas e Comentários** - Área de colaboração
+### 📊 Dashboard Pipeline CRM (Dados Reais do Backend)
+- **4 Métricas Principais** - Leads, clientes, empresas, taxa de conversão (com crescimento percentual)
+- **Timeline Interativa** - Gráfico de linha com evolução de leads e clientes no período (SVG customizado com glow effects)
+- **Distribuição por Status** - Barras horizontais (novo, em_contato, qualificado, perdido)
+- **Top 5 Performers** - Ranking de vendedores por conversão
+- **Radar de Performance** - Engajamento, conversão, retenção, performance, qualidade
+- **Donut de Conversão** - Taxa de conversão com breakdown por status
+- **Distribuição por Segmento** - Leads e clientes por área de atuação
+- **Filtros por Período** - Hoje, semana, mês, trimestre com auto-refresh (60s)
+- **Exportação** - Download dos dados em JSON
+- **Alertas** - Leads qualificados prontos, leads perdidos, taxa de conversão
 
 ### 🎨 Design System
 - **Glassmorphism** - Efeitos de vidro com backdrop-filter
@@ -584,8 +587,22 @@ docker-compose up -d
 npm run migration:run
 ```
 
-6. **Inicie o servidor**
+6. **Popule o banco com dados de exemplo**
 ```bash
+docker exec -i crm_postgres psql -U postgres -d crm_db < backend/src/database/seed.sql
+```
+
+Isso cria dados realistas para demonstração:
+- 6 usuários (1 admin, 1 gerente, 4 vendedores)
+- 15 empresas de 12 segmentos diferentes
+- 50 leads distribuídos por status, origem e período
+- 25 clientes convertidos de leads qualificados
+
+7. **Inicie o backend**
+```bash
+# Compilar (necessário na primeira vez)
+npx tsc -p tsconfig.json
+
 # Modo desenvolvimento (hot reload)
 npm run start:dev
 
@@ -594,14 +611,26 @@ npm run build
 npm run start:prod
 ```
 
+8. **Inicie o frontend**
+```bash
+cd ../frontend
+npm install
+npm run dev
+```
+
 ### Acessar a Aplicação
 
 Após iniciar, a aplicação estará disponível em:
 
+- **Frontend:** http://localhost:3005 (ou 3000 se disponível)
 - **API Backend:** http://localhost:3000/api/v1
 - **Swagger UI:** http://localhost:3000/api/docs
 - **Health Check:** http://localhost:3000/api/v1/metrics/health
 - **Prometheus Metrics:** http://localhost:3000/metrics
+
+**Credenciais de acesso:**
+- **Email:** `admin@crm.com`
+- **Senha:** `Admin@123`
 
 ---
 
@@ -686,10 +715,11 @@ GET /api/v1/analytics/lead-status         # Breakdown por status
 
 ####  Dashboard
 ```http
-GET  /api/v1/dashboard              # Dashboard completo
-GET  /api/v1/dashboard/stats        # Estatísticas gerais
-GET  /api/v1/dashboard/timeline     # Linha do tempo
-POST /api/v1/dashboard/refresh      # Atualizar view (admin)
+GET  /api/v1/dashboard              # Dashboard completo (stats + timeline + status + segmentos + top users)
+GET  /api/v1/dashboard/stats        # Estatísticas gerais (totais + crescimento + conversão)
+GET  /api/v1/dashboard/timeline     # Linha do tempo (leads e clientes por período)
+GET  /api/v1/dashboard/export       # Exportar dados detalhados (leads, clientes, empresas)
+POST /api/v1/dashboard/refresh      # Atualizar materialized view (admin)
 ```
 
 ####  Search (Full-Text)
@@ -931,6 +961,11 @@ Resposta:
 - [x] **Integração Total com Backend** - Axios interceptors e tratamento de erros
 - [x] **Validação de Formulários** - React Hook Form + Zod
 - [x] **Tailwind CSS v4** - Estilização moderna e responsiva
+- [x] **Dashboard com Dados Reais** - Integração completa com API do backend
+- [x] **Gráficos Interativos** - Timeline de leads/clientes, donut de conversão, radar de performance
+- [x] **Filtros por Período** - Hoje, semana, mês, trimestre com auto-refresh
+- [x] **Exportação de Dados** - Download JSON do dashboard para processamento externo
+- [x] **Seed SQL Completo** - 6 usuários, 15 empresas, 50 leads, 25 clientes para demonstração
 
 ### 📋 Backlog
 - [ ] Notificações por email

@@ -164,8 +164,8 @@ function TimelineChart({ labels, leadsData, clientesData }: { labels: string[]; 
   const [showClientes, setShowClientes] = useState(true);
   const [hoveredPoint, setHoveredPoint] = useState<{ type: 'leads' | 'clientes'; index: number } | null>(null);
 
-  const width = 1200;
-  const height = 500;
+  const width = 1400;
+  const height = 700;
   const padding = { top: 60, right: 80, bottom: 80, left: 80 };
 
   const allValues = [...(showLeads ? leadsData : []), ...(showClientes ? clientesData : [])];
@@ -616,7 +616,7 @@ export default function DashboardPage() {
           {timelineLabels.length > 0 ? (
             <TimelineChart labels={timelineLabels} leadsData={timelineLeads} clientesData={timelineClientes} />
           ) : (
-            <div className="flex items-center justify-center h-60 text-muted-foreground text-sm">
+            <div className="flex items-center justify-center h-96 text-muted-foreground text-sm">
               {isLoading ? 'Carregando timeline...' : 'Sem dados para o período selecionado'}
             </div>
           )}

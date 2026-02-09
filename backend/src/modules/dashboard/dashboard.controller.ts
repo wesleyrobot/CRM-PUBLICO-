@@ -121,7 +121,12 @@ export class DashboardController {
     const result = await this.dashboardService.refreshMaterializedView();
 
     // Clear all cached dashboard data
-    await this.cacheManager.reset();
+    const stores = (this.cacheManager as any).stores;
+    if (stores) {
+      for (const s of stores) {
+        if (s?.clear) await s.clear();
+      }
+    }
 
     return result;
   }
