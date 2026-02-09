@@ -1,6 +1,6 @@
-import { Controller, Get, Post, Query, UseGuards, UseInterceptors, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Query, UseGuards, Inject } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { CACHE_MANAGER, CacheInterceptor } from '@nestjs/cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { DashboardService } from './dashboard.service';
 import { DashboardQueryDto, DashboardResponse } from './dto/dashboard.dto';
@@ -11,7 +11,6 @@ import { Roles } from '../../common/decorators/roles.decorator';
 @ApiTags('Dashboard')
 @Controller('dashboard')
 @UseGuards(JwtAuthGuard)
-@UseInterceptors(CacheInterceptor)
 @ApiBearerAuth()
 export class DashboardController {
   constructor(
@@ -121,8 +120,8 @@ export class DashboardController {
   async refreshView() {
     const result = await this.dashboardService.refreshMaterializedView();
 
-    // Note: Cache will expire based on TTL (15 minutes)
-    // Manual cache clear is handled by scheduled cron job
+    // Clear all cached dashboard data
+    await this.cacheManager.reset();
 
     return result;
   }
