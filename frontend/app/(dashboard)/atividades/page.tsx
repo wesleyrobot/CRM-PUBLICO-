@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Activity,
+  History,
   Plus,
   Pencil,
   Trash2,
@@ -234,7 +234,7 @@ export default function AtividadesPage() {
         <Card>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <Activity className="h-12 w-12 mb-3 opacity-50" />
+              <History className="h-12 w-12 mb-3 opacity-50" />
               <p>Nenhuma atividade encontrada</p>
             </div>
           </CardContent>
@@ -242,7 +242,7 @@ export default function AtividadesPage() {
       ) : (
         <div className="space-y-2">
           {logs.map((log) => {
-            const ActionIcon = actionIcons[log.acao] || Activity;
+            const ActionIcon = actionIcons[log.acao] || History;
             const isExpanded = expandedId === log.id;
             return (
               <div

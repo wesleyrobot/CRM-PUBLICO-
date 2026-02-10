@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import {
-  FileText,
+  Handshake,
   TrendingUp,
-  Users,
+  UserCheck,
   Target,
-  ArrowDown,
-  DollarSign,
+  Filter,
+  XCircle,
 } from 'lucide-react';
 import {
   Badge,
@@ -112,7 +112,7 @@ export default function NegociacoesPage() {
             <Card>
               <CardContent>
                 <div className="flex items-center gap-3">
-                  <FileText className="h-8 w-8 text-yellow-500" />
+                  <Handshake className="h-8 w-8 text-yellow-500" />
                   <div>
                     <p className="text-2xl font-bold text-foreground">{emContato + qualificados}</p>
                     <p className="text-xs text-muted-foreground">Em Negociação</p>
@@ -123,7 +123,7 @@ export default function NegociacoesPage() {
             <Card>
               <CardContent>
                 <div className="flex items-center gap-3">
-                  <Users className="h-8 w-8 text-green-500" />
+                  <UserCheck className="h-8 w-8 text-green-500" />
                   <div>
                     <p className="text-2xl font-bold text-foreground">{convertidos}</p>
                     <p className="text-xs text-muted-foreground">Convertidos</p>
@@ -145,7 +145,7 @@ export default function NegociacoesPage() {
             <Card>
               <CardContent>
                 <div className="flex items-center gap-3">
-                  <DollarSign className="h-8 w-8 text-red-500" />
+                  <XCircle className="h-8 w-8 text-red-500" />
                   <div>
                     <p className="text-2xl font-bold text-foreground">{perdidos}</p>
                     <p className="text-xs text-muted-foreground">Perdidos</p>
@@ -159,7 +159,7 @@ export default function NegociacoesPage() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ArrowDown className="h-5 w-5 text-primary" />
+                <Filter className="h-5 w-5 text-primary" />
                 Funil de Vendas
               </CardTitle>
             </CardHeader>
@@ -191,7 +191,7 @@ export default function NegociacoesPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
+                <Handshake className="h-5 w-5 text-primary" />
                 Negociações Ativas ({activeNegotiations.length})
               </CardTitle>
             </CardHeader>
@@ -234,7 +234,7 @@ export default function NegociacoesPage() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                  <FileText className="h-12 w-12 mb-3 opacity-50" />
+                  <Handshake className="h-12 w-12 mb-3 opacity-50" />
                   <p>Nenhuma negociação ativa</p>
                 </div>
               )}

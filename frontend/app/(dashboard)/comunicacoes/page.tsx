@@ -2,7 +2,6 @@
 
 import { useState, useCallback } from 'react';
 import {
-  MessageSquare,
   Search,
   UserPlus,
   Users,
@@ -10,6 +9,7 @@ import {
   ExternalLink,
   Hash,
   AlertCircle,
+  SearchCode,
 } from 'lucide-react';
 import {
   Button,
@@ -287,7 +287,7 @@ export default function ComunicacoesPage() {
         <Card>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <MessageSquare className="h-12 w-12 mb-3 opacity-50" />
+              <SearchCode className="h-12 w-12 mb-3 opacity-50" />
               <p>Digite um termo para buscar</p>
               <p className="text-xs mt-1">A busca utiliza Full-Text Search do PostgreSQL com suporte a português</p>
             </div>
