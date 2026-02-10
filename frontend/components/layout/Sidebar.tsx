@@ -119,8 +119,10 @@ export function Sidebar() {
   useEffect(() => {
     const fetchRecent = async () => {
       try {
-        const { data } = await api.get<{ data: AuditLog[]; meta: any }>('/audit', { params: { limit: 5, page: 1 } });
-        setRecentLogs(data.data?.slice(0, 5) || []);
+        const response = await api.get('/audit', { params: { limit: 5, page: 1 } });
+        const payload = response.data as any;
+        const items = payload?.data || payload || [];
+        setRecentLogs(Array.isArray(items) ? items.slice(0, 5) : []);
       } catch {
         // Silently fail - sidebar activities are not critical
       }

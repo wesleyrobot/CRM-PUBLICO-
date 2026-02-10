@@ -161,11 +161,12 @@ export interface UserPerformance {
 }
 
 export interface TopCompany {
-  companyId: string;
-  companyName: string;
-  totalLeads: number;
-  totalClients: number;
-  conversionRate: number;
+  id: string;
+  company_name: string;
+  segmento: string;
+  total_leads: number;
+  total_clients: number;
+  conversion_rate: number;
 }
 
 export interface MonthlyTrend {
@@ -177,8 +178,9 @@ export interface MonthlyTrend {
 }
 
 export interface LeadDistribution {
-  category: string;
+  lead_category: string;
   status: string;
   count: number;
+  avg_score: number;
   percentage: number;
 }

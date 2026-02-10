@@ -49,9 +49,10 @@ export default function RelatoriosPage() {
   }, [fetchAnalytics]);
 
   const distCategories = leadDistribution.reduce<Record<string, { count: number; percentage: number }>>((acc, d) => {
-    if (!acc[d.category]) acc[d.category] = { count: 0, percentage: 0 };
-    acc[d.category].count += Number(d.count);
-    acc[d.category].percentage += Number(d.percentage);
+    const cat = d.lead_category;
+    if (!acc[cat]) acc[cat] = { count: 0, percentage: 0 };
+    acc[cat].count += Number(d.count);
+    acc[cat].percentage += Number(d.percentage);
     return acc;
   }, {});
 
@@ -172,14 +173,14 @@ export default function RelatoriosPage() {
                             {i + 1}
                           </span>
                           <div>
-                            <p className="text-sm font-medium text-foreground">{company.companyName}</p>
+                            <p className="text-sm font-medium text-foreground">{company.company_name}</p>
                             <p className="text-xs text-muted-foreground">
-                              {company.totalLeads} leads · {company.totalClients} clientes
+                              {company.total_leads} leads · {company.total_clients} clientes
                             </p>
                           </div>
                         </div>
-                        <Badge variant={Number(company.conversionRate) > 50 ? 'success' : Number(company.conversionRate) > 25 ? 'warning' : 'default'}>
-                          {Number(company.conversionRate).toFixed(0)}%
+                        <Badge variant={Number(company.conversion_rate) > 50 ? 'success' : Number(company.conversion_rate) > 25 ? 'warning' : 'default'}>
+                          {Number(company.conversion_rate).toFixed(0)}%
                         </Badge>
                       </div>
                     ))}
@@ -257,8 +258,8 @@ export default function RelatoriosPage() {
                         <tr key={i} className="border-b border-border/50 hover:bg-muted/30">
                           <td className="py-3 px-4">
                             <span className="flex items-center gap-2">
-                              {getCategoryIcon(d.category)}
-                              <span className="capitalize font-medium">{d.category}</span>
+                              {getCategoryIcon(d.lead_category)}
+                              <span className="capitalize font-medium">{d.lead_category}</span>
                             </span>
                           </td>
                           <td className="py-3 px-4 text-muted-foreground">{d.status}</td>
@@ -266,7 +267,7 @@ export default function RelatoriosPage() {
                           <td className="py-3 px-4 text-right text-muted-foreground">{Number(d.percentage).toFixed(1)}%</td>
                           <td className="py-3 px-4 w-40">
                             <div className="h-2 rounded bg-muted overflow-hidden">
-                              <div className={`h-full rounded ${getCategoryColor(d.category)}`} style={{ width: `${Math.min(Number(d.percentage), 100)}%` }} />
+                              <div className={`h-full rounded ${getCategoryColor(d.lead_category)}`} style={{ width: `${Math.min(Number(d.percentage), 100)}%` }} />
                             </div>
                           </td>
                         </tr>

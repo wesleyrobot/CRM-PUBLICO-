@@ -63,7 +63,7 @@ export default function ComunicacoesPage() {
     try {
       setLoading(true);
       setSearched(true);
-      const { data } = await api.get<SearchResponse>('/search', {
+      const response = await api.get('/search', {
         params: {
           query: query.trim(),
           entity: entity === 'all' ? undefined : entity,
@@ -71,8 +71,12 @@ export default function ComunicacoesPage() {
           limit: 20,
         },
       });
-      setResults(data.data);
-      setMeta(data.meta);
+      // After envelope unwrapper, response.data = { data: SearchResult[], meta: {...} }
+      const payload = response.data as any;
+      const searchData = payload?.data || payload || [];
+      const searchMeta = payload?.meta || null;
+      setResults(Array.isArray(searchData) ? searchData : []);
+      setMeta(searchMeta);
       setPage(searchPage);
     } catch (error) {
       console.error('Erro na busca:', error);

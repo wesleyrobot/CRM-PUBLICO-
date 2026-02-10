@@ -48,10 +48,13 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
     try {
       setSearching(true);
-      const { data } = await api.get<SearchResponse>('/search', {
+      const response = await api.get('/search', {
         params: { query: q.trim(), limit: 8 },
       });
-      setResults(data.data || []);
+      // After envelope unwrap: response.data = { data: SearchResult[], meta: {...} }
+      const payload = response.data as any;
+      const items = payload?.data || payload || [];
+      setResults(Array.isArray(items) ? items : []);
       setShowDropdown(true);
     } catch {
       setResults([]);
@@ -100,7 +103,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         </button>
 
         {/* Search with dropdown */}
-        <div className="hidden md:block relative" ref={dropdownRef}>
+        <div className="relative flex-1 max-w-md lg:max-w-lg" ref={dropdownRef}>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -110,7 +113,7 @@ export function Header({ onMenuClick }: HeaderProps) {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => results.length > 0 && setShowDropdown(true)}
               placeholder="Buscar leads, clientes, empresas..."
-              className="h-10 w-64 rounded-lg border border-input bg-background pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 lg:w-96"
+              className="h-10 w-full rounded-lg border border-input bg-background pl-10 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
             {query && (
               <button onClick={clearSearch} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
