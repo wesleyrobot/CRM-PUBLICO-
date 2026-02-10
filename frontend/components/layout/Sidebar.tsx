@@ -1,7 +1,8 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard,
@@ -21,9 +22,13 @@ import {
   Phone,
   Calendar,
   Clock,
+  Pencil,
+  Trash2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar } from '@/components/ui';
+import api from '@/lib/api';
+import type { AuditLog } from '@/types';
 
 const menuItems = [
   {
@@ -61,22 +66,71 @@ const menuItems = [
 ];
 
 const quickActions = [
-  { name: 'E-mail', icon: Mail, color: 'text-blue-500' },
-  { name: 'Ligação', icon: Phone, color: 'text-green-500' },
-  { name: 'Reunião', icon: Calendar, color: 'text-purple-500' },
-  { name: 'WhatsApp', icon: MessageSquare, color: 'text-emerald-500' },
-  { name: 'Tarefa', icon: CheckSquare, color: 'text-amber-500' },
+  { name: 'Novo Lead', icon: UserPlus, color: 'text-blue-500', href: '/leads' },
+  { name: 'Buscar', icon: MessageSquare, color: 'text-emerald-500', href: '/comunicacoes' },
+  { name: 'Relatório', icon: BarChart3, color: 'text-purple-500', href: '/relatorios' },
+  { name: 'Pipeline', icon: Target, color: 'text-amber-500', href: '/oportunidades' },
 ];
 
-const recentActivities = [
-  { type: 'Ligação', description: 'João Silva', time: 'Há 2 horas', icon: Phone, color: 'text-green-500' },
-  { type: 'E-mail', description: 'Ana Costa', time: 'Há 3 horas', icon: Mail, color: 'text-blue-500' },
-  { type: 'WhatsApp', description: 'Reunião confirmada', time: 'Hoje, 09:00', icon: MessageSquare, color: 'text-emerald-500' },
-];
+const actionIcons: Record<string, typeof Plus> = {
+  INSERT: Plus,
+  UPDATE: Pencil,
+  DELETE: Trash2,
+};
+
+const actionColors: Record<string, string> = {
+  INSERT: 'text-green-500',
+  UPDATE: 'text-yellow-500',
+  DELETE: 'text-red-500',
+};
+
+const actionLabels: Record<string, string> = {
+  INSERT: 'Criou',
+  UPDATE: 'Editou',
+  DELETE: 'Removeu',
+};
+
+const tableLabels: Record<string, string> = {
+  leads: 'lead',
+  clientes: 'cliente',
+  empresas: 'empresa',
+  usuarios: 'usuário',
+};
+
+function timeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'Agora';
+  if (diffMin < 60) return `Há ${diffMin}min`;
+  const diffHours = Math.floor(diffMin / 60);
+  if (diffHours < 24) return `Há ${diffHours}h`;
+  const diffDays = Math.floor(diffHours / 24);
+  return `Há ${diffDays}d`;
+}
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
+  const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
+
+  useEffect(() => {
+    const fetchRecent = async () => {
+      try {
+        const response = await api.get('/audit', { params: { limit: 5, page: 1 } });
+        const data = response.data.data || response.data;
+        const logs = Array.isArray(data) ? data : data.data || [];
+        setRecentLogs(logs.slice(0, 5));
+      } catch {
+        // Silently fail - sidebar activities are not critical
+      }
+    };
+    fetchRecent();
+    const interval = setInterval(fetchRecent, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-border bg-card">
@@ -90,7 +144,10 @@ export function Sidebar() {
 
       {/* Nova Interação Button */}
       <div className="p-4">
-        <button className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg">
+        <button
+          onClick={() => router.push('/leads')}
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-blue-700 hover:shadow-lg"
+        >
           <Plus className="h-5 w-5" />
           Nova Interação
         </button>
@@ -105,6 +162,7 @@ export function Sidebar() {
           {quickActions.map((action) => (
             <button
               key={action.name}
+              onClick={() => router.push(action.href)}
               className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <action.icon className={cn('h-5 w-5', action.color)} />
@@ -147,30 +205,36 @@ export function Sidebar() {
           </div>
         ))}
 
-        {/* Atividades Recentes */}
+        {/* Atividades Recentes - Real data from audit API */}
         <div className="mb-6">
           <p className="mb-3 px-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Atividades Recentes
           </p>
           <div className="space-y-3">
-            {recentActivities.map((activity, index) => (
-              <div key={index} className="flex items-start gap-3 rounded-lg px-2 py-2 hover:bg-accent/50 transition-colors">
-                <div className={cn('mt-0.5', activity.color)}>
-                  <activity.icon className="h-4 w-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">
-                    {activity.type} com {activity.description}
-                  </p>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <p className="text-xs text-muted-foreground">
-                      {activity.time}
+            {recentLogs.length > 0 ? recentLogs.map((log) => {
+              const ActionIcon = actionIcons[log.acao] || Plus;
+              const color = actionColors[log.acao] || 'text-muted-foreground';
+              return (
+                <div key={log.id} className="flex items-start gap-3 rounded-lg px-2 py-2 hover:bg-accent/50 transition-colors">
+                  <div className={cn('mt-0.5', color)}>
+                    <ActionIcon className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-foreground truncate">
+                      {actionLabels[log.acao] || log.acao} {tableLabels[log.tabela] || log.tabela}
                     </p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground">
+                        {timeAgo(log.criadoEm)}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            }) : (
+              <p className="text-xs text-muted-foreground px-2">Nenhuma atividade recente</p>
+            )}
           </div>
         </div>
       </nav>

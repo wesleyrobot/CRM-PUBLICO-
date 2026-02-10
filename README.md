@@ -202,6 +202,56 @@ Sistema frontend completo desenvolvido com Next.js 16 e design glassmorphic:
 - **Exportação** - Download dos dados em JSON
 - **Alertas** - Leads qualificados prontos, leads perdidos, taxa de conversão
 
+### 👥 Gestão de Equipe (/equipe)
+- **CRUD de Usuários** - Criar, editar, excluir membros da equipe
+- **Cargos** - Admin (roxo), Gerente (azul), Vendedor (verde) com badges coloridos
+- **Validação de Senha** - 8+ chars, maiúscula, minúscula, número
+- **Proteção** - Não permite excluir o próprio usuário
+
+### 📈 Relatórios Analytics (/relatorios)
+- **Distribuição de Leads** - Hot, Warm, Cold, Inactive com cards e barras
+- **Tendência Mensal** - 12 meses com leads criados, convertidos e taxa
+- **Top Empresas** - Ranking por taxa de conversão
+- **Performance da Equipe** - Leads e clientes por vendedor
+
+### 📋 Atividades/Auditoria (/atividades)
+- **Timeline de Auditoria** - INSERT (verde), UPDATE (amarelo), DELETE (vermelho)
+- **Diff de Dados** - Expandir para ver dados anteriores vs novos (JSON diff)
+- **Stats Cards** - Total registros, últimas 24h, por tipo de ação
+- **Filtros** - Por tabela e tipo de ação
+
+### ⚡ Automações (/automacoes)
+- **CRON Jobs** - Dashboard refresh (15min), search vectors (1h), cleanup (diário), VACUUM (semanal)
+- **Execução Manual** - Botão "Executar Agora" para admins
+- **Status em Tempo Real** - Feedback de sucesso/erro após execução
+
+### 🎯 Pipeline de Oportunidades (/oportunidades)
+- **Kanban Board** - 4 colunas: Novo → Em Contato → Qualificado → Perdido
+- **Cards de Lead** - Nome, pontuação, origem, email
+- **Busca e Contagem** - Filtro por nome e totais por coluna
+
+### 📊 Funil de Negociações (/negociacoes)
+- **Funil Visual** - Barras proporcionais com leads totais → convertidos
+- **Métricas** - Total em negociação, convertidos, taxa de conversão, perdidos
+- **Tabela de Negociações Ativas** - Leads em contato e qualificados ordenados por pontuação
+
+### 🔍 Comunicações/Busca Full-Text (/comunicacoes)
+- **Busca Inteligente** - Full-Text Search PostgreSQL com suporte a português
+- **Resultados com Ranking** - Relevância, highlight dos termos encontrados
+- **Filtro por Entidade** - Leads, Clientes, Empresas ou Todos
+- **Stats de Busca** - Total de resultados por tipo
+
+### ⚙️ Configurações (/configuracoes)
+- **Perfil Editável** - Nome, email, telefone com validação
+- **Health Check** - Status do sistema, banco de dados, uptime
+- **Uso de Memória** - RSS, Heap Total, Heap Usado, External
+- **Info do Sistema** - NestJS 11, Next.js 16, PostgreSQL 16, Redis 7
+
+### 🔎 Busca Global no Header
+- **Busca em Tempo Real** - Dropdown com resultados enquanto digita
+- **Navegação Rápida** - Clicar no resultado navega para a página da entidade
+- **Badges de Tipo** - Lead (azul), Cliente (verde), Empresa (laranja)
+
 ### 🎨 Design System
 - **Glassmorphism** - Efeitos de vidro com backdrop-filter
 - **Gradient Orbs** - Animações flutuantes de fundo
@@ -210,7 +260,7 @@ Sistema frontend completo desenvolvido com Next.js 16 e design glassmorphic:
 - **Dark Mode Ready** - Preparado para modo escuro
 
 ### 🧩 Componentes
-- **Sidebar Completa** - Navegação + ações rápidas + atividades recentes
+- **Sidebar Completa** - Navegação + ações rápidas + atividades recentes do audit log
 - **Cards Interativos** - Hover animations e scale effects
 - **Inputs Modernos** - Glow effects e transições
 - **Buttons Gradient** - Efeito shine com animação
@@ -957,7 +1007,7 @@ Resposta:
 - [x] **Autenticação Completa** - Login, registro e refresh token
 - [x] **Dashboard Pipeline CRM** - Métricas, funil de vendas e analytics
 - [x] **Design Glassmorphic** - Interface moderna com efeitos de vidro
-- [x] **Sidebar Interativa** - Ações rápidas e atividades recentes
+- [x] **Sidebar Interativa** - Ações rápidas e atividades recentes do audit log
 - [x] **Integração Total com Backend** - Axios interceptors e tratamento de erros
 - [x] **Validação de Formulários** - React Hook Form + Zod
 - [x] **Tailwind CSS v4** - Estilização moderna e responsiva
@@ -966,6 +1016,16 @@ Resposta:
 - [x] **Filtros por Período** - Hoje, semana, mês, trimestre com auto-refresh
 - [x] **Exportação de Dados** - Download JSON do dashboard para processamento externo
 - [x] **Seed SQL Completo** - 6 usuários, 15 empresas, 50 leads, 25 clientes para demonstração
+- [x] **Gestão de Equipe** - CRUD completo de usuários com controle de cargos (admin/gerente/vendedor)
+- [x] **Relatórios Analytics** - Distribuição de leads, tendência mensal, top empresas, performance da equipe
+- [x] **Auditoria/Atividades** - Timeline de INSERT/UPDATE/DELETE com diff de dados anteriores vs novos
+- [x] **Automações** - Visualização e execução manual dos CRON Jobs do sistema
+- [x] **Pipeline de Oportunidades** - Kanban board com 4 colunas (Novo → Em Contato → Qualificado → Perdido)
+- [x] **Funil de Negociações** - Funil de vendas visual com métricas de conversão
+- [x] **Busca Full-Text** - Busca inteligente com ranking, highlight e filtro por entidade (leads/clientes/empresas)
+- [x] **Configurações** - Perfil do usuário editável + status do sistema (health check, memória, uptime)
+- [x] **Header com Busca Global** - Dropdown de resultados em tempo real conectado ao `/search`
+- [x] **Sidebar Dinâmica** - Atividades recentes reais do audit log + ações rápidas funcionais
 
 ### 📋 Backlog
 - [ ] Notificações por email

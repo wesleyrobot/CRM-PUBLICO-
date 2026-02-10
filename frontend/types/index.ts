@@ -87,3 +87,98 @@ export interface Client {
   criadoEm: string;
   atualizadoEm: string;
 }
+
+export type AuditAction = 'INSERT' | 'UPDATE' | 'DELETE';
+
+export interface AuditLog {
+  id: number;
+  tabela: string;
+  acao: AuditAction;
+  registroId: string;
+  dadosAnteriores?: Record<string, unknown>;
+  dadosNovos?: Record<string, unknown>;
+  usuarioId?: string;
+  usuario?: { id: string; nome: string; email: string };
+  criadoEm: string;
+}
+
+export interface AuditStats {
+  totalLogs: number;
+  byAction: { acao: string; count: number }[];
+  byTable: { tabela: string; count: number }[];
+  last24h: number;
+}
+
+export interface SearchResult {
+  id: string;
+  type: 'lead' | 'cliente' | 'empresa';
+  nome: string;
+  email?: string;
+  telefone?: string;
+  rank: number;
+  highlight?: string;
+}
+
+export interface SearchResponse {
+  data: SearchResult[];
+  meta: {
+    query: string;
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    entities: {
+      leads: number;
+      clientes: number;
+      empresas: number;
+    };
+  };
+}
+
+export interface SchedulerJob {
+  name: string;
+  nextRun?: string;
+  description?: string;
+}
+
+export interface HealthCheck {
+  status: string;
+  timestamp: string;
+  uptime: string;
+  database: { status: string; responseTime: string };
+  memory: { rss: string; heapTotal: string; heapUsed: string; external: string };
+  environment: string;
+  nodeVersion: string;
+  responseTime: string;
+}
+
+export interface UserPerformance {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  totalLeads: number;
+  totalClients: number;
+}
+
+export interface TopCompany {
+  companyId: string;
+  companyName: string;
+  totalLeads: number;
+  totalClients: number;
+  conversionRate: number;
+}
+
+export interface MonthlyTrend {
+  month: string;
+  leads_created: number;
+  leads_converted: number;
+  conversion_rate: number;
+  cumulative_leads: number;
+}
+
+export interface LeadDistribution {
+  category: string;
+  status: string;
+  count: number;
+  percentage: number;
+}
