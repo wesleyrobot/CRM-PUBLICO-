@@ -240,17 +240,21 @@ export default function OportunidadesPage() {
                 onDrop={(e) => handleDropOnColumn(e, status)}
               >
                 {/* Column Header */}
-                <div className={`rounded-t-lg border ${config.bgColor} p-3 mb-2 transition-colors ${isDropTarget ? 'ring-2 ring-primary ring-offset-1' : ''}`}>
+                <div className={`rounded-t-lg border ${config.bgColor} p-3 mb-2 transition-colors min-h-[4.5rem] ${isDropTarget ? 'ring-2 ring-primary ring-offset-1' : ''}`}>
                   <div className="flex items-center justify-between">
                     <h3 className={`text-sm font-semibold ${config.color}`}>{config.label}</h3>
                     <span className={`text-xs font-bold ${config.color}`}>{leads.length}</span>
                   </div>
-                  {idx < statuses.length - 1 && (
+                  {idx < statuses.length - 1 ? (
                     <div className="flex items-center gap-1 mt-1">
                       <ArrowRight className="h-3 w-3 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground">
                         {statusConfig[statuses[idx + 1]].label}
                       </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 mt-1">
+                      <span className="text-xs text-muted-foreground">Estágio final</span>
                     </div>
                   )}
                 </div>

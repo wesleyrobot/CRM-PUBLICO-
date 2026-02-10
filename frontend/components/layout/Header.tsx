@@ -40,14 +40,18 @@ export function Header({ onMenuClick }: HeaderProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const [searchError, setSearchError] = useState('');
+
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim() || q.trim().length < 2) {
       setResults([]);
       setShowDropdown(false);
+      setSearchError('');
       return;
     }
     try {
       setSearching(true);
+      setSearchError('');
       const response = await api.get('/search', {
         params: { query: q.trim(), limit: 8 },
       });
@@ -56,8 +60,10 @@ export function Header({ onMenuClick }: HeaderProps) {
       const items = payload?.data || payload || [];
       setResults(Array.isArray(items) ? items : []);
       setShowDropdown(true);
-    } catch {
+    } catch (err: any) {
       setResults([]);
+      setSearchError(err?.response?.data?.message || 'Erro na busca');
+      setShowDropdown(true);
     } finally {
       setSearching(false);
     }
@@ -158,6 +164,8 @@ export function Header({ onMenuClick }: HeaderProps) {
                     Ver todos os resultados →
                   </button>
                 </div>
+              ) : searchError ? (
+                <div className="p-4 text-center text-sm text-destructive">{searchError}</div>
               ) : query.trim().length >= 2 ? (
                 <div className="p-4 text-center text-sm text-muted-foreground">Nenhum resultado encontrado</div>
               ) : null}

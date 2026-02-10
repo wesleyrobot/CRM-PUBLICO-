@@ -9,6 +9,7 @@ import {
   Building2,
   ExternalLink,
   Hash,
+  AlertCircle,
 } from 'lucide-react';
 import {
   Button,
@@ -17,8 +18,6 @@ import {
   Badge,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui';
 import { PageHeader } from '@/components/layout';
 import api from '@/lib/api';
@@ -56,6 +55,7 @@ export default function ComunicacoesPage() {
   const [meta, setMeta] = useState<SearchResponse['meta'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
   const [page, setPage] = useState(1);
 
   const performSearch = useCallback(async (searchPage = 1) => {
@@ -63,6 +63,7 @@ export default function ComunicacoesPage() {
     try {
       setLoading(true);
       setSearched(true);
+      setErrorMsg('');
       const response = await api.get('/search', {
         params: {
           query: query.trim(),
@@ -78,8 +79,10 @@ export default function ComunicacoesPage() {
       setResults(Array.isArray(searchData) ? searchData : []);
       setMeta(searchMeta);
       setPage(searchPage);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro na busca:', error);
+      const msg = error?.response?.data?.message || error?.message || 'Erro ao realizar busca. Verifique se o backend está rodando.';
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg));
       setResults([]);
       setMeta(null);
     } finally {
@@ -110,7 +113,7 @@ export default function ComunicacoesPage() {
       {/* Search Bar */}
       <Card className="mb-6">
         <CardContent>
-          <div className="flex gap-4">
+          <div className="flex items-end gap-4">
             <div className="flex-1">
               <Input
                 placeholder="Buscar leads, clientes, empresas..."
@@ -131,10 +134,21 @@ export default function ComunicacoesPage() {
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-2">
-            Busca com ranking de relevância, suporte a acentos e destaque dos termos encontrados
+            Busca com ranking de relevância, suporte a acentos e destaque dos termos encontrados. Pressione Enter ou clique Buscar.
           </p>
         </CardContent>
       </Card>
+
+      {/* Error Message */}
+      {errorMsg && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 mb-6 flex items-start gap-3">
+          <AlertCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-destructive">Erro na busca</p>
+            <p className="text-xs text-destructive/80 mt-1">{errorMsg}</p>
+          </div>
+        </div>
+      )}
 
       {/* Search Stats */}
       {meta && (
@@ -259,7 +273,7 @@ export default function ComunicacoesPage() {
             </div>
           )}
         </div>
-      ) : searched ? (
+      ) : searched && !errorMsg ? (
         <Card>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -269,7 +283,7 @@ export default function ComunicacoesPage() {
             </div>
           </CardContent>
         </Card>
-      ) : (
+      ) : !searched ? (
         <Card>
           <CardContent>
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -279,7 +293,7 @@ export default function ComunicacoesPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }
