@@ -59,9 +59,8 @@ export default function AutomacoesPage() {
   const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/scheduler/jobs');
-      const data = response.data.data || response.data;
-      setJobs(Array.isArray(data) ? data : []);
+      const response = await api.get<SchedulerJob[]>('/scheduler/jobs');
+      setJobs(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Erro ao buscar jobs:', error);
     } finally {
@@ -77,8 +76,8 @@ export default function AutomacoesPage() {
     try {
       setRunningJob(jobName);
       const response = await api.post(`/scheduler/run/${jobName}`);
-      const data = response.data.data || response.data;
-      setResults(prev => ({ ...prev, [jobName]: { success: true, message: data.message || 'Executado com sucesso' } }));
+      const data = response.data;
+      setResults(prev => ({ ...prev, [jobName]: { success: true, message: data?.message || 'Executado com sucesso' } }));
       fetchJobs();
     } catch (error: any) {
       const msg = error.response?.data?.message || 'Erro ao executar job';

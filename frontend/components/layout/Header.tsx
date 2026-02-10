@@ -6,7 +6,7 @@ import { Bell, Search, Menu, UserPlus, Users, Building2, X } from 'lucide-react'
 import { Avatar, Badge } from '@/components/ui';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
-import type { SearchResult } from '@/types';
+import type { SearchResult, SearchResponse } from '@/types';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -48,12 +48,10 @@ export function Header({ onMenuClick }: HeaderProps) {
     }
     try {
       setSearching(true);
-      const response = await api.get('/search', {
+      const { data } = await api.get<SearchResponse>('/search', {
         params: { query: q.trim(), limit: 8 },
       });
-      const data = response.data.data || response.data;
-      const items = data.data || data;
-      setResults(Array.isArray(items) ? items : []);
+      setResults(data.data || []);
       setShowDropdown(true);
     } catch {
       setResults([]);

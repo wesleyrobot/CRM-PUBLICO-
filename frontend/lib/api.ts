@@ -41,6 +41,17 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
+// Interceptor para desembrulhar o envelope da API {success, data, timestamp, path}
+api.interceptors.response.use(
+  (response) => {
+    if (response.data && response.data.success !== undefined && response.data.data !== undefined) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Interceptor para tratar erros de resposta com refresh token
 api.interceptors.response.use(
   (response) => response,

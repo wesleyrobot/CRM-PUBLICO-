@@ -60,9 +60,8 @@ export default function ConfiguracoesPage() {
   const fetchHealth = useCallback(async () => {
     try {
       setHealthLoading(true);
-      const response = await api.get('/metrics/health');
-      const data = response.data.data || response.data;
-      setHealth(data);
+      const response = await api.get<HealthCheck>('/metrics/health');
+      setHealth(response.data);
     } catch (error) {
       console.error('Erro ao buscar health:', error);
     } finally {

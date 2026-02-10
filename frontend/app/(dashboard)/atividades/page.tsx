@@ -88,23 +88,14 @@ export default function AtividadesPage() {
       if (actionFilter) params.acao = actionFilter;
 
       const [logsRes, statsRes] = await Promise.all([
-        api.get('/audit', { params }),
-        api.get('/audit/stats'),
+        api.get<PaginatedResponse<AuditLog>>('/audit', { params }),
+        api.get<AuditStats>('/audit/stats'),
       ]);
 
-      const logsData = logsRes.data.data || logsRes.data;
-      if (Array.isArray(logsData)) {
-        setLogs(logsData);
-        setTotalPages(logsRes.data.meta?.totalPages || 1);
-        setTotal(logsRes.data.meta?.total || logsData.length);
-      } else if (logsData.data) {
-        setLogs(logsData.data);
-        setTotalPages(logsData.meta?.totalPages || 1);
-        setTotal(logsData.meta?.total || 0);
-      }
-
-      const statsData = statsRes.data.data || statsRes.data;
-      setStats(statsData);
+      setLogs(logsRes.data.data);
+      setTotalPages(logsRes.data.meta.totalPages);
+      setTotal(logsRes.data.meta.total);
+      setStats(statsRes.data);
     } catch (error) {
       console.error('Erro ao buscar atividades:', error);
     } finally {
@@ -200,14 +191,14 @@ export default function AtividadesPage() {
               </div>
             </CardContent>
           </Card>
-          {stats.byAction?.slice(0, 2).map((a, i) => (
-            <Card key={i}>
+          {stats.byAction && Object.entries(stats.byAction).map(([acao, count]) => (
+            <Card key={acao}>
               <CardContent>
                 <div className="flex items-center gap-3">
-                  <BarChart3 className={`h-8 w-8 ${a.acao === 'INSERT' ? 'text-green-500' : a.acao === 'UPDATE' ? 'text-yellow-500' : 'text-red-500'}`} />
+                  <BarChart3 className={`h-8 w-8 ${acao === 'INSERT' ? 'text-green-500' : acao === 'UPDATE' ? 'text-yellow-500' : 'text-red-500'}`} />
                   <div>
-                    <p className="text-2xl font-bold text-foreground">{a.count}</p>
-                    <p className="text-xs text-muted-foreground">{actionLabels[a.acao] || a.acao}</p>
+                    <p className="text-2xl font-bold text-foreground">{count}</p>
+                    <p className="text-xs text-muted-foreground">{actionLabels[acao] || acao}</p>
                   </div>
                 </div>
               </CardContent>

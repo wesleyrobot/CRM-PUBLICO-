@@ -12,6 +12,8 @@ import {
   Shield,
   ShieldCheck,
   UserCheck,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 import {
   Button,
@@ -37,7 +39,6 @@ const createUserSchema = z.object({
     .regex(/[0-9]/, 'Senha deve conter um número'),
   cargo: z.enum(['admin', 'gerente', 'vendedor']),
   telefone: z.string().optional(),
-  ativo: z.coerce.boolean().optional(),
 });
 
 const editUserSchema = z.object({
@@ -45,7 +46,6 @@ const editUserSchema = z.object({
   email: z.string().email('Email inválido'),
   cargo: z.enum(['admin', 'gerente', 'vendedor']),
   telefone: z.string().optional(),
-  ativo: z.coerce.boolean().optional(),
 });
 
 type CreateUserFormData = z.infer<typeof createUserSchema>;
@@ -69,6 +69,13 @@ const cargoOptions = [
   { value: 'vendedor', label: 'Vendedor' },
 ];
 
+const cargoFilterOptions = [
+  { value: '', label: 'Todos os cargos' },
+  { value: 'admin', label: 'Administrador' },
+  { value: 'gerente', label: 'Gerente' },
+  { value: 'vendedor', label: 'Vendedor' },
+];
+
 export default function EquipePage() {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
@@ -78,11 +85,13 @@ export default function EquipePage() {
   const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [cargoFilter, setCargoFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const isEditing = !!selectedUser;
   const schema = isEditing ? editUserSchema : createUserSchema;
@@ -109,6 +118,7 @@ export default function EquipePage() {
       setLoading(true);
       const params: Record<string, string | number> = { page, limit: 10 };
       if (debouncedSearch) params.search = debouncedSearch;
+      if (cargoFilter) params.cargo = cargoFilter;
       const { data } = await api.get<PaginatedResponse<User>>('/users', { params });
       setUsers(data.data);
       setTotalPages(data.meta.totalPages);
@@ -118,7 +128,7 @@ export default function EquipePage() {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch]);
+  }, [page, debouncedSearch, cargoFilter]);
 
   useEffect(() => {
     fetchUsers();
@@ -126,6 +136,7 @@ export default function EquipePage() {
 
   const openCreateModal = () => {
     setSelectedUser(null);
+    setErrorMsg('');
     reset({
       nome: '',
       email: '',
@@ -138,6 +149,7 @@ export default function EquipePage() {
 
   const openEditModal = (user: User) => {
     setSelectedUser(user);
+    setErrorMsg('');
     reset({
       nome: user.nome,
       email: user.email,
@@ -156,16 +168,17 @@ export default function EquipePage() {
   const onSubmit = async (formData: CreateUserFormData | EditUserFormData) => {
     try {
       setSaving(true);
+      setErrorMsg('');
       if (selectedUser) {
-        const { ...payload } = formData as EditUserFormData;
-        await api.patch(`/users/${selectedUser.id}`, payload);
+        await api.patch(`/users/${selectedUser.id}`, formData as EditUserFormData);
       } else {
         await api.post('/users', formData);
       }
       setIsModalOpen(false);
       fetchUsers();
     } catch (error: any) {
-      console.error('Erro ao salvar usuário:', error);
+      const msg = error.response?.data?.message || 'Erro ao salvar usuário';
+      setErrorMsg(typeof msg === 'string' ? msg : JSON.stringify(msg));
     } finally {
       setSaving(false);
     }
@@ -183,6 +196,15 @@ export default function EquipePage() {
       console.error('Erro ao excluir usuário:', error);
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const toggleAtivo = async (user: User) => {
+    try {
+      await api.patch(`/users/${user.id}`, { ativo: !user.ativo });
+      fetchUsers();
+    } catch (error) {
+      console.error('Erro ao alterar status:', error);
     }
   };
 
@@ -235,9 +257,20 @@ export default function EquipePage() {
       key: 'ativo',
       title: 'Status',
       render: (user: User) => (
-        <Badge variant={user.ativo ? 'success' : 'error'}>
-          {user.ativo ? 'Ativo' : 'Inativo'}
-        </Badge>
+        <button
+          onClick={(e) => { e.stopPropagation(); if (user.id !== currentUser?.id) toggleAtivo(user); }}
+          className={`flex items-center gap-1.5 ${user.id === currentUser?.id ? 'cursor-default' : 'cursor-pointer'}`}
+          title={user.id === currentUser?.id ? 'Não é possível desativar sua própria conta' : `Clique para ${user.ativo ? 'desativar' : 'ativar'}`}
+        >
+          {user.ativo ? (
+            <ToggleRight className="h-5 w-5 text-green-500" />
+          ) : (
+            <ToggleLeft className="h-5 w-5 text-muted-foreground" />
+          )}
+          <Badge variant={user.ativo ? 'success' : 'error'}>
+            {user.ativo ? 'Ativo' : 'Inativo'}
+          </Badge>
+        </button>
       ),
     },
     {
@@ -276,7 +309,7 @@ export default function EquipePage() {
     <div>
       <PageHeader
         title="Equipe"
-        subtitle="Gerencie os membros da sua equipe e permissões"
+        subtitle={`Gerencie os membros da sua equipe · ${total} membros`}
         actions={
           <Button leftIcon={<Plus className="h-4 w-4" />} onClick={openCreateModal}>
             Novo Membro
@@ -284,13 +317,19 @@ export default function EquipePage() {
         }
       />
 
-      <div className="mb-6">
+      <div className="flex gap-4 mb-6">
         <Input
           placeholder="Buscar membros..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           leftIcon={<Search className="h-4 w-4" />}
           className="max-w-sm"
+        />
+        <Select
+          options={cargoFilterOptions}
+          value={cargoFilter}
+          onChange={(e) => { setCargoFilter(e.target.value); setPage(1); }}
+          className="w-48"
         />
       </div>
 
@@ -304,6 +343,11 @@ export default function EquipePage() {
         size="lg"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {errorMsg && (
+            <div className="rounded-md bg-destructive/10 border border-destructive/30 px-4 py-2 text-sm text-destructive">
+              {errorMsg}
+            </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="Nome *" error={errors.nome?.message} {...register('nome')} />
             <Input label="Email *" type="email" error={errors.email?.message} {...register('email')} />

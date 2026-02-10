@@ -50,8 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const response = await api.get<{ data: User }>('/auth/me');
-      setUser(response.data.data);
+      const response = await api.get<User>('/auth/me');
+      setUser(response.data);
 
       if (publicRoutes.includes(pathname)) {
         router.push('/');
@@ -72,12 +72,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [checkAuth]);
 
   const login = async (email: string, senha: string) => {
-    const response = await api.post<{ data: AuthResponse }>('/auth/login', {
+    const response = await api.post<AuthResponse>('/auth/login', {
       email,
       senha,
     });
 
-    const authData = response.data.data;
+    const authData = response.data;
     localStorage.setItem('token', authData.access_token);
     localStorage.setItem('refresh_token', authData.refresh_token);
     setUser(authData.user);
@@ -85,9 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const register = async (data: RegisterData) => {
-    const response = await api.post<{ data: AuthResponse }>('/auth/register', data);
+    const response = await api.post<AuthResponse>('/auth/register', data);
 
-    const authData = response.data.data;
+    const authData = response.data;
     localStorage.setItem('token', authData.access_token);
     localStorage.setItem('refresh_token', authData.refresh_token);
     setUser(authData.user);

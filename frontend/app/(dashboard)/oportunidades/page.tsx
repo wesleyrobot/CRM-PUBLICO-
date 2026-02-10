@@ -8,19 +8,20 @@ import {
   Star,
   Building2,
   User,
+  ChevronRight,
 } from 'lucide-react';
 import {
+  Button,
   Input,
+  Modal,
   Badge,
   Card,
   CardContent,
-  CardHeader,
-  CardTitle,
 } from '@/components/ui';
 import { PageHeader } from '@/components/layout';
 import api from '@/lib/api';
 import { formatDate } from '@/lib/utils';
-import type { Lead, PaginatedResponse } from '@/types';
+import type { Lead, Company, User as UserType, PaginatedResponse } from '@/types';
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
   novo: { label: 'Novo', color: 'text-blue-400', bgColor: 'bg-blue-500/10 border-blue-500/30' },
@@ -33,8 +34,12 @@ const statuses = ['novo', 'em_contato', 'qualificado', 'perdido'] as const;
 
 export default function OportunidadesPage() {
   const [allLeads, setAllLeads] = useState<Lead[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
   const fetchAllLeads = useCallback(async () => {
     try {
@@ -54,6 +59,32 @@ export default function OportunidadesPage() {
     fetchAllLeads();
   }, [fetchAllLeads]);
 
+  useEffect(() => {
+    const fetchAux = async () => {
+      try {
+        const [compRes, usersRes] = await Promise.all([
+          api.get<PaginatedResponse<Company>>('/companies', { params: { limit: 100 } }),
+          api.get<PaginatedResponse<UserType>>('/users', { params: { limit: 100 } }),
+        ]);
+        setCompanies(compRes.data.data || []);
+        setUsers(usersRes.data.data || []);
+      } catch { /* non-critical */ }
+    };
+    fetchAux();
+  }, []);
+
+  const getCompanyName = (empresaId?: string) => {
+    if (!empresaId) return null;
+    const c = companies.find(c => c.id === empresaId);
+    return c ? (c.nomeFantasia || c.razaoSocial) : null;
+  };
+
+  const getResponsavelName = (responsavelId?: string) => {
+    if (!responsavelId) return null;
+    const u = users.find(u => u.id === responsavelId);
+    return u ? u.nome : null;
+  };
+
   const filteredLeads = search
     ? allLeads.filter(l => l.nome.toLowerCase().includes(search.toLowerCase()) || l.email?.toLowerCase().includes(search.toLowerCase()))
     : allLeads;
@@ -63,13 +94,32 @@ export default function OportunidadesPage() {
     return acc;
   }, {} as Record<string, Lead[]>);
 
-  const totalValue = filteredLeads.reduce((sum, l) => sum + l.pontuacao, 0);
+  const handleStatusChange = async (lead: Lead, newStatus: string) => {
+    try {
+      await api.patch(`/leads/${lead.id}`, { status: newStatus });
+      fetchAllLeads();
+    } catch (error) {
+      console.error('Erro ao alterar status:', error);
+    }
+  };
+
+  const openStatusModal = (lead: Lead) => {
+    setSelectedLead(lead);
+    setIsStatusModalOpen(true);
+  };
+
+  // Quick advance to next status
+  const getNextStatus = (current: string): string | null => {
+    const idx = statuses.indexOf(current as typeof statuses[number]);
+    if (idx >= 0 && idx < statuses.length - 1) return statuses[idx + 1];
+    return null;
+  };
 
   return (
     <div>
       <PageHeader
         title="Oportunidades"
-        subtitle="Pipeline de vendas - Visualize seus leads por estágio"
+        subtitle={`Pipeline de vendas · ${filteredLeads.length} oportunidades`}
       />
 
       {/* Summary */}
@@ -138,31 +188,58 @@ export default function OportunidadesPage() {
                       Sem oportunidades
                     </div>
                   ) : (
-                    leads.map((lead) => (
-                      <div
-                        key={lead.id}
-                        className="rounded-lg border border-border bg-card p-3 hover:border-primary/30 transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-sm font-medium text-foreground truncate">{lead.nome}</h4>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <Star className="h-3 w-3 text-yellow-500" />
-                            <span className="text-xs font-bold text-foreground">{lead.pontuacao}</span>
+                    leads.map((lead) => {
+                      const nextStatus = getNextStatus(lead.status);
+                      const companyName = getCompanyName(lead.empresaId);
+                      const responsavelName = getResponsavelName(lead.responsavelId);
+                      return (
+                        <div
+                          key={lead.id}
+                          onClick={() => openStatusModal(lead)}
+                          className="rounded-lg border border-border bg-card p-3 hover:border-primary/30 transition-colors cursor-pointer group"
+                        >
+                          <div className="flex items-start justify-between mb-1">
+                            <h4 className="text-sm font-medium text-foreground truncate">{lead.nome}</h4>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <Star className="h-3 w-3 text-yellow-500" />
+                              <span className="text-xs font-bold text-foreground">{lead.pontuacao}</span>
+                            </div>
                           </div>
-                        </div>
-                        {lead.email && (
-                          <p className="text-xs text-muted-foreground truncate mb-1">{lead.email}</p>
-                        )}
-                        <div className="flex items-center gap-3 mt-2">
-                          {lead.origem && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Target className="h-3 w-3" /> {lead.origem}
-                            </span>
+                          {lead.email && (
+                            <p className="text-xs text-muted-foreground truncate mb-1">{lead.email}</p>
                           )}
+                          {companyName && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
+                              <Building2 className="h-3 w-3" /> {companyName}
+                            </p>
+                          )}
+                          {responsavelName && (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
+                              <User className="h-3 w-3" /> {responsavelName}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2">
+                              {lead.origem && (
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                  <Target className="h-3 w-3" /> {lead.origem}
+                                </span>
+                              )}
+                            </div>
+                            {nextStatus && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleStatusChange(lead, nextStatus); }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5 text-xs text-primary hover:text-primary/80"
+                                title={`Mover para ${statusConfig[nextStatus].label}`}
+                              >
+                                <ChevronRight className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1">{formatDate(lead.criadoEm)}</p>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">{formatDate(lead.criadoEm)}</p>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -170,6 +247,31 @@ export default function OportunidadesPage() {
           })}
         </div>
       )}
+
+      {/* Status Change Modal */}
+      <Modal isOpen={isStatusModalOpen} onClose={() => setIsStatusModalOpen(false)} title="Alterar Status" size="sm">
+        <p className="text-sm text-muted-foreground mb-4">
+          Alterar status de <strong className="text-foreground">{selectedLead?.nome}</strong>:
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {statuses.map(s => (
+            <button
+              key={s}
+              onClick={() => { if (selectedLead) { handleStatusChange(selectedLead, s); setIsStatusModalOpen(false); } }}
+              disabled={selectedLead?.status === s}
+              className={`rounded-lg border p-3 text-sm font-medium transition-colors ${
+                selectedLead?.status === s
+                  ? 'border-primary bg-primary/10 text-primary cursor-default'
+                  : 'border-border hover:border-primary/50 hover:bg-accent text-foreground'
+              }`}
+            >
+              <Badge variant={s === 'novo' ? 'info' : s === 'em_contato' ? 'warning' : s === 'qualificado' ? 'success' : 'error'}>
+                {statusConfig[s].label}
+              </Badge>
+            </button>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -63,7 +63,7 @@ export default function ComunicacoesPage() {
     try {
       setLoading(true);
       setSearched(true);
-      const response = await api.get('/search', {
+      const { data } = await api.get<SearchResponse>('/search', {
         params: {
           query: query.trim(),
           entity: entity === 'all' ? undefined : entity,
@@ -71,18 +71,13 @@ export default function ComunicacoesPage() {
           limit: 20,
         },
       });
-      const data = response.data.data || response.data;
-      if (data.data) {
-        setResults(data.data);
-        setMeta(data.meta);
-      } else if (Array.isArray(data)) {
-        setResults(data);
-        setMeta(null);
-      }
+      setResults(data.data);
+      setMeta(data.meta);
       setPage(searchPage);
     } catch (error) {
       console.error('Erro na busca:', error);
       setResults([]);
+      setMeta(null);
     } finally {
       setLoading(false);
     }

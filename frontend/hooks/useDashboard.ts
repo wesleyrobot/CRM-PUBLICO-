@@ -94,7 +94,7 @@ export function useDashboard(options: UseDashboardOptions = {}): UseDashboardRet
         params: { period },
       });
 
-      setData(response.data.data);
+      setData(response.data);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Erro ao carregar dashboard';
       setError(errorMessage);
@@ -114,7 +114,7 @@ export function useDashboard(options: UseDashboardOptions = {}): UseDashboardRet
       });
 
       // Convert to JSON and trigger download
-      const jsonStr = JSON.stringify(response.data.data, null, 2);
+      const jsonStr = JSON.stringify(response.data, null, 2);
       const blob = new Blob([jsonStr], { type: 'application/json' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

@@ -104,8 +104,8 @@ export interface AuditLog {
 
 export interface AuditStats {
   totalLogs: number;
-  byAction: { acao: string; count: number }[];
-  byTable: { tabela: string; count: number }[];
+  byAction: Record<string, number>;
+  byTable: Record<string, number>;
   last24h: number;
 }
 

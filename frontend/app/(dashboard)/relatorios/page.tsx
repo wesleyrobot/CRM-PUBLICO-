@@ -33,10 +33,10 @@ export default function RelatoriosPage() {
         api.get('/analytics/monthly-trend'),
         api.get('/analytics/lead-distribution'),
       ]);
-      setUserPerformance(perfRes.data.data || perfRes.data || []);
-      setTopCompanies(compRes.data.data || compRes.data || []);
-      setMonthlyTrend(trendRes.data.data || trendRes.data || []);
-      setLeadDistribution(distRes.data.data || distRes.data || []);
+      setUserPerformance(Array.isArray(perfRes.data) ? perfRes.data : []);
+      setTopCompanies(Array.isArray(compRes.data) ? compRes.data : []);
+      setMonthlyTrend(Array.isArray(trendRes.data) ? trendRes.data : []);
+      setLeadDistribution(Array.isArray(distRes.data) ? distRes.data : []);
     } catch (error) {
       console.error('Erro ao buscar analytics:', error);
     } finally {
