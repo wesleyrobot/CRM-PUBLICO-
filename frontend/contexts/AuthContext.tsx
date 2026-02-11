@@ -30,7 +30,7 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const publicRoutes = ['/login', '/register'];
+const publicRoutes = ['/', '/login', '/register'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -53,7 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await api.get<User>('/auth/me');
       setUser(response.data);
 
-      if (publicRoutes.includes(pathname)) {
+      // Se usuário autenticado estiver em rota pública (exceto raiz), redirecionar
+      if (publicRoutes.includes(pathname) && pathname !== '/') {
         router.push('/');
       }
     } catch (error) {
