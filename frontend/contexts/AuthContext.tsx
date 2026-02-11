@@ -30,7 +30,7 @@ interface RegisterData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const publicRoutes = ['/', '/login', '/register'];
+const publicRoutes = ['/login', '/register'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
