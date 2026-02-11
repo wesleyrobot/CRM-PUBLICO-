@@ -180,8 +180,16 @@ Sistema profissional de **Customer Relationship Management (CRM)** full-stack de
 
 Sistema frontend completo desenvolvido com Next.js 16 e design glassmorphic:
 
+### 🎬 Splash Screen Animado
+- **Tela de Boas-vindas** - Splash screen com animação de letras "CRM PÚBLICO"
+- **Letras Animadas** - Alternância azul/branco com efeitos de rotação e escala
+- **Partículas Flutuantes** - 50 partículas animadas em background
+- **Redirecionamento Inteligente** - Usuários autenticados → `/dashboard`, não autenticados → `/login`
+- **Créditos** - Footer com "Desenvolvido por Wesley A.Costa" com gradiente animado
+- **SSR Otimizado** - Partículas geradas no cliente para evitar hydration mismatch
+
 ### 🔐 Autenticação
-- **Login/Registro** - Interface glassmorphic moderna com validação
+- **Login/Registro** - Interface glassmorphic moderna com validação e animações dramáticas
 - **Validação de Senha** - 8 caracteres + maiúscula + minúscula + número (sincronizado com backend)
 - **JWT Integration** - Access token (1h) + Refresh token (7d)
 - **Auto Refresh** - Renovação automática de tokens via Axios interceptors
@@ -673,6 +681,8 @@ npm run dev
 Após iniciar, a aplicação estará disponível em:
 
 - **Frontend:** http://localhost:3005 (ou 3000 se disponível)
+  - Primeira tela: Splash screen animado com letras "CRM PÚBLICO"
+  - Redirecionamento automático para login (não autenticado) ou dashboard (autenticado)
 - **API Backend:** http://localhost:3000/api/v1
 - **Swagger UI:** http://localhost:3000/api/docs
 - **Health Check:** http://localhost:3000/api/v1/metrics/health
@@ -1003,8 +1013,9 @@ Resposta:
 - [x] **RBAC granular - roles por operação (admin, gerente, vendedor)**
 
 ### ✅ Frontend Concluído
+- [x] **Splash Screen Animado** - Tela de boas-vindas com letras azul/branco e partículas flutuantes
 - [x] **Frontend Next.js 16.1.3** - Interface moderna e responsiva
-- [x] **Autenticação Completa** - Login, registro e refresh token
+- [x] **Autenticação Completa** - Login, registro e refresh token com animações dramáticas
 - [x] **Dashboard Pipeline CRM** - Métricas, funil de vendas e analytics
 - [x] **Design Glassmorphic** - Interface moderna com efeitos de vidro
 - [x] **Sidebar Interativa** - Ações rápidas e atividades recentes do audit log
