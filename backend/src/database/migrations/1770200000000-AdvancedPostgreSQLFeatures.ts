@@ -17,7 +17,7 @@ export class AdvancedPostgreSQLFeatures1770200000000 implements MigrationInterfa
           setweight(to_tsvector('portuguese', COALESCE(NEW.nome, '')), 'A') ||
           setweight(to_tsvector('portuguese', COALESCE(NEW.email, '')), 'B') ||
           setweight(to_tsvector('portuguese', COALESCE(NEW.telefone, '')), 'C') ||
-          setweight(to_tsvector('portuguese', COALESCE(NEW.empresa, '')), 'B') ||
+          setweight(to_tsvector('portuguese', COALESCE(NEW.cargo, '')), 'C') ||
           setweight(to_tsvector('portuguese', COALESCE(NEW.origem, '')), 'D');
         RETURN NEW;
       END;
@@ -58,7 +58,8 @@ export class AdvancedPostgreSQLFeatures1770200000000 implements MigrationInterfa
       RETURNS TRIGGER AS $$
       BEGIN
         NEW.search_vector :=
-          setweight(to_tsvector('portuguese', COALESCE(NEW.nome, '')), 'A') ||
+          setweight(to_tsvector('portuguese', COALESCE(NEW.razao_social, '')), 'A') ||
+          setweight(to_tsvector('portuguese', COALESCE(NEW.nome_fantasia, '')), 'A') ||
           setweight(to_tsvector('portuguese', COALESCE(NEW.cnpj, '')), 'B') ||
           setweight(to_tsvector('portuguese', COALESCE(NEW.segmento, '')), 'C') ||
           setweight(to_tsvector('portuguese', COALESCE(NEW.cidade, '')), 'D');
@@ -311,7 +312,7 @@ export class AdvancedPostgreSQLFeatures1770200000000 implements MigrationInterfa
         setweight(to_tsvector('portuguese', COALESCE(nome, '')), 'A') ||
         setweight(to_tsvector('portuguese', COALESCE(email, '')), 'B') ||
         setweight(to_tsvector('portuguese', COALESCE(telefone, '')), 'C') ||
-        setweight(to_tsvector('portuguese', COALESCE(empresa, '')), 'B') ||
+        setweight(to_tsvector('portuguese', COALESCE(cargo, '')), 'C') ||
         setweight(to_tsvector('portuguese', COALESCE(origem, '')), 'D')
       WHERE search_vector IS NULL;
     `);
@@ -326,7 +327,8 @@ export class AdvancedPostgreSQLFeatures1770200000000 implements MigrationInterfa
 
     await queryRunner.query(`
       UPDATE empresas SET search_vector =
-        setweight(to_tsvector('portuguese', COALESCE(nome, '')), 'A') ||
+        setweight(to_tsvector('portuguese', COALESCE(razao_social, '')), 'A') ||
+        setweight(to_tsvector('portuguese', COALESCE(nome_fantasia, '')), 'A') ||
         setweight(to_tsvector('portuguese', COALESCE(cnpj, '')), 'B') ||
         setweight(to_tsvector('portuguese', COALESCE(segmento, '')), 'C') ||
         setweight(to_tsvector('portuguese', COALESCE(cidade, '')), 'D')
