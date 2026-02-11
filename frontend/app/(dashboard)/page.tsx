@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   Users,
+  UserPlus,
+  Building2,
   TrendingUp,
   Target,
   Activity,
@@ -390,10 +392,10 @@ export default function DashboardPage() {
   const displayMetrics = useMemo(() => {
     const s = dashboardData?.stats;
     if (!s) return [
-      { title: 'Total de Leads', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: Users, trend: [0, 0] },
-      { title: 'Total de Clientes', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: Target, trend: [0, 0] },
-      { title: 'Taxa de Conversão', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: TrendingUp, trend: [0, 0] },
-      { title: 'Total de Empresas', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: Briefcase, trend: [0, 0] },
+      { title: 'Total de Leads', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: UserPlus, trend: [0, 0] },
+      { title: 'Total de Clientes', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: Users, trend: [0, 0] },
+      { title: 'Taxa de Conversão', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: Target, trend: [0, 0] },
+      { title: 'Total de Empresas', value: '-', change: '-', subtitle: 'Carregando...', isPositive: true, icon: Building2, trend: [0, 0] },
     ];
     return [
       {
@@ -402,7 +404,7 @@ export default function DashboardPage() {
         change: `${(s.growth?.leads ?? 0) > 0 ? '+' : ''}${(s.growth?.leads ?? 0).toFixed(1)}%`,
         subtitle: 'Crescimento no período',
         isPositive: (s.growth?.leads ?? 0) >= 0,
-        icon: Users,
+        icon: UserPlus,
         trend: dashboardData?.timeline?.leads ?? [0, 0],
       },
       {
@@ -411,7 +413,7 @@ export default function DashboardPage() {
         change: `${(s.growth?.clientes ?? 0) > 0 ? '+' : ''}${(s.growth?.clientes ?? 0).toFixed(1)}%`,
         subtitle: 'Crescimento no período',
         isPositive: (s.growth?.clientes ?? 0) >= 0,
-        icon: Target,
+        icon: Users,
         trend: dashboardData?.timeline?.clientes ?? [0, 0],
       },
       {
@@ -420,7 +422,7 @@ export default function DashboardPage() {
         change: `${s.conversion?.qualified ?? 0} qualificados`,
         subtitle: `${s.conversion?.lost ?? 0} perdidos`,
         isPositive: (s.conversion?.rate ?? 0) >= 20,
-        icon: TrendingUp,
+        icon: Target,
         trend: [Math.max((s.conversion?.rate ?? 0) - 5, 0), (s.conversion?.rate ?? 0) - 2, s.conversion?.rate ?? 0],
       },
       {
@@ -429,7 +431,7 @@ export default function DashboardPage() {
         change: `${(s.growth?.empresas ?? 0) > 0 ? '+' : ''}${(s.growth?.empresas ?? 0).toFixed(1)}%`,
         subtitle: `${s.totals?.usuarios ?? 0} usuários ativos`,
         isPositive: (s.growth?.empresas ?? 0) >= 0,
-        icon: Briefcase,
+        icon: Building2,
         trend: [Math.max((s.totals?.empresas ?? 0) - 3, 0), (s.totals?.empresas ?? 0) - 1, s.totals?.empresas ?? 0],
       },
     ];
@@ -666,15 +668,21 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="p-4 space-y-3">
             {topUsersData.map((performer, index) => {
-              const initials = performer.nome.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+              // Gerar URL de avatar usando DiceBear API
+              const avatarUrl = `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(performer.nome)}&backgroundColor=b6e3f4,c0aede,d1d4f9`;
               const colors = ['from-yellow-500 to-amber-500', 'from-primary to-blue-500', 'from-blue-500 to-purple-500', 'from-purple-500 to-pink-500', 'from-pink-500 to-primary'];
               return (
                 <div key={performer.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/20 hover:bg-muted/30 transition-all cursor-pointer group">
                   <div className={cn('flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium text-foreground flex-shrink-0 group-hover:scale-110 transition-transform', index === 0 ? 'bg-gradient-to-br from-yellow-500 to-amber-500' : 'bg-gradient-to-br from-primary/30 to-blue-500/30')} style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 136, 0.3))' }}>
                     {index + 1}
                   </div>
-                  <div className={cn('w-10 h-10 rounded-lg bg-gradient-to-br flex items-center justify-center text-sm font-medium text-foreground flex-shrink-0 group-hover:scale-110 transition-transform', colors[index % colors.length])} style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 136, 0.2))' }}>
-                    {initials}
+                  <div className="relative w-10 h-10 flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <img
+                      src={avatarUrl}
+                      alt={performer.nome}
+                      className="w-full h-full rounded-lg object-cover ring-2 ring-primary/20 group-hover:ring-primary/50 transition-all"
+                      style={{ filter: 'drop-shadow(0 0 4px rgba(0, 255, 136, 0.2))' }}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-medium text-foreground mb-1 group-hover:text-primary transition-colors">{performer.nome}</div>
