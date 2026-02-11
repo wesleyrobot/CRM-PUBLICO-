@@ -49,17 +49,17 @@ import { ResponseWrapperInterceptor } from './common/interceptors/response-wrapp
             {
               name: 'short',
               ttl: 1000,
-              limit: 3,
+              limit: 100,
             },
             {
               name: 'medium',
               ttl: 10000,
-              limit: 20,
+              limit: 200,
             },
             {
               name: 'long',
               ttl: 60000,
-              limit: 100,
+              limit: 500,
             },
           ],
     ),

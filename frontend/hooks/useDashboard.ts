@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
+import * as XLSX from 'xlsx';
 
 export interface DashboardStats {
   totals: {
@@ -113,21 +114,106 @@ export function useDashboard(options: UseDashboardOptions = {}): UseDashboardRet
         params: { period },
       });
 
-      // Convert to JSON and trigger download
-      const jsonStr = JSON.stringify(response.data, null, 2);
-      const blob = new Blob([jsonStr], { type: 'application/json' });
+      const exportInfo = response.data?.export;
+      const stats = response.data?.stats;
+      const wb = XLSX.utils.book_new();
+
+      // Sheet 1: Resumo
+      const resumoData = [
+        ['Relatório CRM - Dashboard Export'],
+        ['Período', exportInfo?.period || period],
+        ['Exportado em', new Date().toLocaleString('pt-BR')],
+        [],
+        ['Totais'],
+        ['Leads', stats?.totals?.leads || 0],
+        ['Clientes', stats?.totals?.clientes || 0],
+        ['Empresas', stats?.totals?.empresas || 0],
+        ['Usuários', stats?.totals?.usuarios || 0],
+        [],
+        ['Conversão'],
+        ['Taxa de Conversão (%)', stats?.conversion?.rate || 0],
+        ['Qualificados', stats?.conversion?.qualified || 0],
+        ['Perdidos', stats?.conversion?.lost || 0],
+      ];
+      const wsResumo = XLSX.utils.aoa_to_sheet(resumoData);
+      wsResumo['!cols'] = [{ wch: 25 }, { wch: 20 }];
+      XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo');
+
+      // Sheet 2: Leads
+      if (exportInfo?.leads?.length) {
+        const leadsFormatted = exportInfo.leads.map((l: any) => ({
+          'Nome': l.nome,
+          'Email': l.email,
+          'Telefone': l.telefone,
+          'Status': l.status,
+          'Origem': l.origem,
+          'Pontuação': l.pontuacao,
+          'Empresa': l.empresa,
+          'Segmento': l.segmento,
+          'Responsável': l.responsavel,
+          'Criado em': l.criado_em ? new Date(l.criado_em).toLocaleDateString('pt-BR') : '',
+        }));
+        const wsLeads = XLSX.utils.json_to_sheet(leadsFormatted);
+        wsLeads['!cols'] = [
+          { wch: 25 }, { wch: 30 }, { wch: 15 }, { wch: 15 },
+          { wch: 15 }, { wch: 12 }, { wch: 25 }, { wch: 20 },
+          { wch: 20 }, { wch: 12 },
+        ];
+        XLSX.utils.book_append_sheet(wb, wsLeads, 'Leads');
+      }
+
+      // Sheet 3: Clientes
+      if (exportInfo?.clients?.length) {
+        const clientsFormatted = exportInfo.clients.map((c: any) => ({
+          'Nome': c.nome,
+          'Email': c.email,
+          'Telefone': c.telefone,
+          'Empresa': c.empresa,
+          'Segmento': c.segmento,
+          'Responsável': c.responsavel,
+          'Ativo': c.ativo ? 'Sim' : 'Não',
+          'Cliente desde': c.criado_em ? new Date(c.criado_em).toLocaleDateString('pt-BR') : '',
+        }));
+        const wsClients = XLSX.utils.json_to_sheet(clientsFormatted);
+        wsClients['!cols'] = [
+          { wch: 25 }, { wch: 30 }, { wch: 15 }, { wch: 25 },
+          { wch: 20 }, { wch: 20 }, { wch: 8 }, { wch: 15 },
+        ];
+        XLSX.utils.book_append_sheet(wb, wsClients, 'Clientes');
+      }
+
+      // Sheet 4: Empresas
+      if (exportInfo?.companies?.length) {
+        const companiesFormatted = exportInfo.companies.map((e: any) => ({
+          'Nome': e.nome,
+          'CNPJ': e.cnpj,
+          'Segmento': e.segmento,
+          'Telefone': e.telefone,
+          'Website': e.website,
+          'Ativo': e.ativo ? 'Sim' : 'Não',
+          'Total Leads': e.total_leads,
+          'Total Clientes': e.total_clients,
+          'Cadastro': e.criado_em ? new Date(e.criado_em).toLocaleDateString('pt-BR') : '',
+        }));
+        const wsCompanies = XLSX.utils.json_to_sheet(companiesFormatted);
+        wsCompanies['!cols'] = [
+          { wch: 30 }, { wch: 20 }, { wch: 20 }, { wch: 15 },
+          { wch: 25 }, { wch: 8 }, { wch: 12 }, { wch: 14 }, { wch: 12 },
+        ];
+        XLSX.utils.book_append_sheet(wb, wsCompanies, 'Empresas');
+      }
+
+      // Generate and download
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `dashboard_export_${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `crm_relatorio_${new Date().toISOString().split('T')[0]}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-
-      console.log('📊 Dados exportados com sucesso!');
-      console.log('💡 Dica: Use o script Python para converter para Excel:');
-      console.log(`   python export_to_excel.py --token YOUR_TOKEN --period ${period}`);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Erro ao exportar dados';
       setError(errorMessage);
