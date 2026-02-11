@@ -296,10 +296,10 @@ export class DashboardService {
         l.telefone,
         l.status,
         l.origem,
-        l.valor_estimado,
+        l.pontuacao,
         l.criado_em,
         l.atualizado_em,
-        e.nome as empresa,
+        COALESCE(e.nome_fantasia, e.razao_social) as empresa,
         e.segmento,
         u.nome as responsavel
       FROM leads l
@@ -321,7 +321,7 @@ export class DashboardService {
         c.ativo,
         c.criado_em,
         c.atualizado_em,
-        e.nome as empresa,
+        COALESCE(e.nome_fantasia, e.razao_social) as empresa,
         e.segmento,
         u.nome as responsavel
       FROM clientes c
@@ -336,13 +336,12 @@ export class DashboardService {
     const companiesQuery = `
       SELECT
         id,
-        nome,
+        COALESCE(nome_fantasia, razao_social) as nome,
         cnpj,
         segmento,
         ativo,
         telefone,
-        email,
-        site,
+        website,
         criado_em,
         atualizado_em,
         (SELECT COUNT(*) FROM leads WHERE empresa_id = empresas.id AND deletado_em IS NULL) as total_leads,
