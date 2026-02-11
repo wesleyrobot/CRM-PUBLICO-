@@ -19,12 +19,12 @@ export default function SplashScreen() {
   // Generate particles only on client side to avoid hydration mismatch
   useEffect(() => {
     setParticles(
-      Array.from({ length: 50 }, (_, i) => ({
+      Array.from({ length: 15 }, (_, i) => ({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        size: Math.random() * 3 + 1,
-        duration: Math.random() * 3 + 2,
+        size: Math.random() * 4 + 2,
+        duration: Math.random() * 4 + 3,
       }))
     );
   }, []);
@@ -66,23 +66,16 @@ export default function SplashScreen() {
     <div className="min-h-screen bg-black relative overflow-hidden flex items-center justify-center">
       {/* Animated particles */}
       {particles.map((particle) => (
-        <motion.div
+        <div
           key={particle.id}
-          className="absolute rounded-full bg-blue-500/20"
+          className="absolute rounded-full bg-blue-500/20 animate-float"
           style={{
             width: particle.size,
             height: particle.size,
             left: `${particle.x}%`,
             top: `${particle.y}%`,
-          }}
-          animate={{
-            y: [0, -30, 0],
-            opacity: [0.2, 0.5, 0.2],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            ease: 'easeInOut',
+            animationDuration: `${particle.duration}s`,
+            animationDelay: `${particle.id * 0.1}s`,
           }}
         />
       ))}
@@ -104,23 +97,22 @@ export default function SplashScreen() {
                   textShadow: isEven
                     ? '0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.3)'
                     : '0 0 20px rgba(255, 255, 255, 0.3)',
+                  willChange: 'transform, opacity',
                 }}
                 initial={{
-                  x: isEven ? -1000 : 1000,
+                  x: isEven ? -200 : 200,
                   opacity: 0,
-                  rotate: isEven ? -180 : 180,
-                  scale: 0,
+                  scale: 0.5,
                 }}
                 animate={{
                   x: 0,
                   opacity: 1,
-                  rotate: 0,
                   scale: 1,
                 }}
                 transition={{
-                  duration: 1.2,
-                  delay: index * 0.1,
-                  ease: [0.16, 1, 0.3, 1],
+                  duration: 0.8,
+                  delay: index * 0.08,
+                  ease: [0.25, 0.1, 0.25, 1],
                 }}
               >
                 {isSpace ? '\u00A0' : letter}
