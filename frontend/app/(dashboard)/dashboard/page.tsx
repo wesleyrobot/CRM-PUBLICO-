@@ -224,10 +224,10 @@ function TimelineChart({ labels, leadsData, clientesData }: { labels: string[]; 
           <ellipse cx="35%" cy="40%" rx="300" ry="150" fill="#00ff88" opacity="0.06" />
           <ellipse cx="65%" cy="60%" rx="350" ry="180" fill="#00d4ff" opacity="0.04" />
 
-          {ySteps.map((value) => {
+          {ySteps.map((value, index) => {
             const y = padding.top + chartHeight - (value / maxValue) * chartHeight;
             return (
-              <g key={value}>
+              <g key={`y-step-${index}`}>
                 <line x1={padding.left} y1={y} x2={width - padding.right} y2={y} stroke="rgba(255,255,255,0.05)" strokeWidth="1" strokeDasharray="4 4" />
                 <text x={padding.left - 20} y={y} textAnchor="end" dominantBaseline="middle" className="text-xs fill-muted-foreground">{value}</text>
               </g>

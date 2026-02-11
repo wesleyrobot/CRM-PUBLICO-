@@ -32,7 +32,7 @@ const menuItems = [
   {
     title: 'Principal',
     items: [
-      { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     ],
   },
   {
@@ -145,7 +145,7 @@ export function Sidebar() {
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const isActive = pathname === item.href ||
-                  (item.href !== '/' && pathname.startsWith(item.href));
+                  (item.href !== '/' && item.href !== '/dashboard' && pathname.startsWith(item.href));
 
                 return (
                   <li key={item.href}>

@@ -52,31 +52,54 @@ export default function LoginPage() {
 
       {/* Login Card */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        initial={{ opacity: 0, scale: 0.8, y: 60 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{
+          duration: 1,
+          ease: [0.16, 1, 0.3, 1],
+          delay: 0.2
+        }}
         className="relative z-10 w-full max-w-md"
       >
-        <div className="bg-black/70 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10">
+        <motion.div
+          className="bg-black/70 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10"
+          initial={{ boxShadow: "0 0 0 rgba(168, 85, 247, 0)" }}
+          animate={{
+            boxShadow: [
+              "0 0 0 rgba(168, 85, 247, 0)",
+              "0 0 30px rgba(168, 85, 247, 0.3)",
+              "0 0 0 rgba(168, 85, 247, 0)"
+            ]
+          }}
+          transition={{
+            duration: 3,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
           {/* Title */}
           <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: 0.8,
+              delay: 0.5,
+              ease: "easeOut"
+            }}
             className="text-3xl md:text-4xl font-bold text-white mb-8"
           >
             Faça seu login
             <motion.span
               animate={{
-                scale: [1, 1.2, 1],
-                opacity: [1, 0.8, 1],
+                scale: [1, 1.3, 1],
+                rotate: [0, 5, -5, 0],
               }}
               transition={{
                 duration: 2,
                 repeat: Infinity,
                 ease: "easeInOut"
               }}
-              className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400"
+              className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400"
             >
               .
             </motion.span>
@@ -97,9 +120,13 @@ export default function LoginPage() {
 
             {/* Email Field */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -100 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{
+                duration: 0.7,
+                delay: 0.7,
+                ease: [0.16, 1, 0.3, 1]
+              }}
             >
               <label htmlFor="email" className="block text-white text-sm mb-2">
                 E-mail
@@ -123,9 +150,13 @@ export default function LoginPage() {
 
             {/* Password Field */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: 100 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{
+                duration: 0.7,
+                delay: 0.9,
+                ease: [0.16, 1, 0.3, 1]
+              }}
             >
               <label htmlFor="senha" className="block text-white text-sm mb-2">
                 Senha
@@ -156,9 +187,9 @@ export default function LoginPage() {
 
             {/* Forgot Password Link */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 1.1 }}
               className="flex justify-center"
             >
               <Link
@@ -171,11 +202,18 @@ export default function LoginPage() {
 
             {/* Submit Button */}
             <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              initial={{ opacity: 0, scale: 0.5, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{
+                duration: 0.8,
+                delay: 1.3,
+                ease: [0.16, 1, 0.3, 1]
+              }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 40px rgba(168, 85, 247, 0.6)"
+              }}
+              whileTap={{ scale: 0.95 }}
               type="submit"
               disabled={isSubmitting}
               className="w-full py-3 rounded-lg font-medium text-white bg-gradient-to-r from-purple-500 via-pink-500 to-orange-400 hover:shadow-lg hover:shadow-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -193,9 +231,9 @@ export default function LoginPage() {
 
           {/* Register Link */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.5 }}
             className="mt-6 text-center"
           >
             <Link
@@ -208,19 +246,37 @@ export default function LoginPage() {
 
           {/* Credit Footer */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1.7 }}
             className="mt-8 pt-6 border-t border-white/10 text-center"
           >
-            <p className="text-xs text-gray-500">
+            <motion.p
+              className="text-xs text-gray-500"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
               CRM Público • Desenvolvido por{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+              <motion.span
+                className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 font-semibold"
+                animate={{
+                  backgroundPosition: ["0%", "100%", "0%"]
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
                 Wesley A.Costa
-              </span>
-            </p>
+              </motion.span>
+            </motion.p>
           </motion.div>
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
