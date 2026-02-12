@@ -26,6 +26,15 @@ export class Lead {
   @Column({ length: 20, nullable: true })
   telefone: string;
 
+  @Column({ length: 20, nullable: true })
+  whatsapp: string;
+
+  @Column({ length: 3, nullable: true })
+  ddd: string;
+
+  @Column({ name: 'razao_social', length: 200, nullable: true })
+  razaoSocial: string;
+
   @Column({ length: 100, nullable: true })
   cargo: string;
 

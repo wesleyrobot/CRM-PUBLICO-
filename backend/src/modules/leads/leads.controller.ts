@@ -9,8 +9,14 @@ import {
   Query,
   ParseUUIDPipe,
   UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  Res,
+  Header,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { Response } from 'express';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
@@ -75,5 +81,26 @@ export class LeadsController {
   @ApiResponse({ status: 403, description: 'Acesso negado' })
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.leadsService.remove(id);
+  }
+
+  @Post('import')
+  @Roles('admin', 'gerente', 'vendedor')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Importar leads de arquivo Excel' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, description: 'Importação concluída' })
+  @ApiResponse({ status: 400, description: 'Arquivo inválido' })
+  async importExcel(@UploadedFile() file: Express.Multer.File) {
+    return this.leadsService.importFromExcel(file);
+  }
+
+  @Get('template/download')
+  @ApiOperation({ summary: 'Baixar template Excel para importação' })
+  @ApiResponse({ status: 200, description: 'Template Excel' })
+  @Header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+  @Header('Content-Disposition', 'attachment; filename="template-leads.xlsx"')
+  async downloadTemplate(@Res() res: Response) {
+    const buffer = await this.leadsService.downloadTemplate();
+    res.send(buffer);
   }
 }

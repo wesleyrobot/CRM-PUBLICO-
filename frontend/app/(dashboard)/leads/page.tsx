@@ -13,7 +13,9 @@ import {
   User,
   ArrowRightLeft,
   Filter,
+  Upload,
 } from 'lucide-react';
+import Link from 'next/link';
 import {
   Button,
   Input,
@@ -359,9 +361,16 @@ export default function LeadsPage() {
         title="Leads"
         subtitle={`Gerencie seus leads e oportunidades de negócio · ${total} leads`}
         actions={
-          <Button leftIcon={<Plus className="h-4 w-4" />} onClick={openCreateModal}>
-            Novo Lead
-          </Button>
+          <div className="flex gap-3">
+            <Link href="/leads/import">
+              <Button variant="outline" leftIcon={<Upload className="h-4 w-4" />}>
+                Importar Excel
+              </Button>
+            </Link>
+            <Button leftIcon={<Plus className="h-4 w-4" />} onClick={openCreateModal}>
+              Novo Lead
+            </Button>
+          </div>
         }
       />
 
