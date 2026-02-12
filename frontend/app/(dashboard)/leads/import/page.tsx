@@ -134,14 +134,14 @@ export default function ImportLeadsPage() {
               </div>
               <div>
                 <h3 className="font-bold text-white mb-2 flex items-center gap-2">
-                  Importação Inteligente 🤖
+                  Importação Inteligente
                 </h3>
                 <p className="text-sm text-gray-400 mb-3">
                   Sistema com IA que entende planilhas bagunçadas e normaliza os dados automaticamente!
                 </p>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-cyan-400">📋 Campos Aceitos:</p>
+                    <p className="text-xs font-bold text-cyan-400">Campos Aceitos:</p>
                     <ul className="text-xs text-gray-400 space-y-0.5">
                       <li>• <strong className="text-white">nome</strong> (obrigatório)</li>
                       <li>• email, telefone/celular/whatsapp</li>
@@ -150,7 +150,7 @@ export default function ImportLeadsPage() {
                     </ul>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-green-400">✨ Normalização Automática:</p>
+                    <p className="text-xs font-bold text-green-400">Normalização Automática:</p>
                     <ul className="text-xs text-gray-400 space-y-0.5">
                       <li>✓ Telefone → formato WhatsApp</li>
                       <li>✓ DDD extraído automaticamente</li>
@@ -160,7 +160,7 @@ export default function ImportLeadsPage() {
                   </div>
                 </div>
                 <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-3">
-                  <p className="text-xs text-blue-400 font-medium mb-1">💡 Exemplos de telefones aceitos:</p>
+                  <p className="text-xs text-blue-400 font-medium mb-1">Exemplos de telefones aceitos:</p>
                   <div className="grid grid-cols-3 gap-2 text-xs text-gray-400">
                     <code className="bg-gray-900/50 px-2 py-1 rounded">11999999999</code>
                     <code className="bg-gray-900/50 px-2 py-1 rounded">(11) 99999-9999</code>
