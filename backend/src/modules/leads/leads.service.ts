@@ -1,6 +1,8 @@
 import {
   Injectable,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,17 +11,28 @@ import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { LeadFilterDto } from './dto/lead-filter.dto';
 import { PaginatedResult } from '../../common/dto/pagination.dto';
+import { IntegrationsService } from '../integrations/integrations.service';
+import { IntegrationEvent } from '../integrations/entities/integration.entity';
 
 @Injectable()
 export class LeadsService {
   constructor(
     @InjectRepository(Lead)
     private leadsRepository: Repository<Lead>,
+    @Inject(forwardRef(() => IntegrationsService))
+    private integrationsService: IntegrationsService,
   ) {}
 
   async create(createLeadDto: CreateLeadDto): Promise<Lead> {
     const lead = this.leadsRepository.create(createLeadDto);
-    return this.leadsRepository.save(lead);
+    const savedLead = await this.leadsRepository.save(lead);
+
+    // Disparar evento para integrações (fire and forget)
+    this.integrationsService
+      .triggerEvent(IntegrationEvent.LEAD_CREATED, savedLead)
+      .catch((err) => console.error('Erro ao disparar integrações:', err));
+
+    return savedLead;
   }
 
   async findAll(filterDto: LeadFilterDto): Promise<PaginatedResult<Lead>> {

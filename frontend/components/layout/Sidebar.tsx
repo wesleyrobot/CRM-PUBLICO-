@@ -57,7 +57,7 @@ const menuItems = [
     items: [
       { name: 'Equipe', href: '/equipe', icon: UserCog },
       { name: 'Relatórios', href: '/relatorios', icon: BarChart3 },
-      { name: 'Automações', href: '/automacoes', icon: Zap },
+      { name: 'Integrações', href: '/integrations', icon: Zap },
       { name: 'Configurações', href: '/configuracoes', icon: Settings },
     ],
   },

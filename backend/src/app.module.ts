@@ -22,6 +22,8 @@ import { AuditModule } from './modules/audit/audit.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
+import { ApiKeysModule } from './modules/api-keys/api-keys.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { ResponseWrapperInterceptor } from './common/interceptors/response-wrapper.interceptor';
 
 @Module({
@@ -105,6 +107,8 @@ import { ResponseWrapperInterceptor } from './common/interceptors/response-wrapp
     DashboardModule,
     SchedulerModule,
     MetricsModule,
+    ApiKeysModule,
+    IntegrationsModule,
   ],
   controllers: [AppController],
   providers: [
