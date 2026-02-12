@@ -39,37 +39,49 @@ interface Stats {
   total_errors: number;
 }
 
-// Ícones SVG profissionais dos sistemas
+// Ícones SVG dos logos oficiais
 const SystemIcons = {
   Zapier: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <path fill="#FF4A00" d="M128 23L233 128L128 233L23 128z" />
-      <path fill="#fff" d="M128 80v96M80 128h96" strokeWidth="12" stroke="#fff" />
+      <rect fill="#FF4A00" width="256" height="256" rx="30" />
+      <path
+        fill="#fff"
+        d="M128 60L185 128L128 196L71 128z M128 85v86 M85 128h86"
+        strokeWidth="0"
+      />
     </svg>
   ),
   Make: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
       <defs>
         <linearGradient id="makeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6366F1" />
-          <stop offset="100%" stopColor="#8B5CF6" />
+          <stop offset="0%" stopColor="#6B21F5" />
+          <stop offset="100%" stopColor="#A855F7" />
         </linearGradient>
       </defs>
-      <circle cx="128" cy="128" r="100" fill="url(#makeGrad)" />
-      <circle cx="128" cy="128" r="40" fill="#fff" />
-      <circle cx="80" cy="80" r="20" fill="#fff" />
-      <circle cx="176" cy="80" r="20" fill="#fff" />
-      <circle cx="80" cy="176" r="20" fill="#fff" />
-      <circle cx="176" cy="176" r="20" fill="#fff" />
+      <rect fill="url(#makeGrad)" width="256" height="256" rx="50" />
+      <circle cx="128" cy="70" r="18" fill="#fff" />
+      <circle cx="80" cy="100" r="18" fill="#fff" />
+      <circle cx="176" cy="100" r="18" fill="#fff" />
+      <circle cx="128" cy="128" r="22" fill="#fff" />
+      <circle cx="70" cy="156" r="18" fill="#fff" />
+      <circle cx="186" cy="156" r="18" fill="#fff" />
+      <circle cx="128" cy="186" r="18" fill="#fff" />
     </svg>
   ),
   N8n: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#EA4B71" width="256" height="256" rx="40" />
+      <rect fill="#EA4B71" width="256" height="256" rx="45" />
       <path
         fill="#fff"
-        d="M80 80h40v96H80zM136 120h40v56h-40z"
+        d="M70 75 L110 75 L110 145 Q110 165 90 165 L70 165z M145 110 L185 110 L185 165 Q185 180 170 180 L145 180z"
       />
+      <text x="93" y="155" fontSize="85" fontWeight="900" fill="#fff" fontFamily="Arial, sans-serif">
+        n
+      </text>
+      <text x="158" y="175" fontSize="65" fontWeight="900" fill="#fff" fontFamily="Arial, sans-serif">
+        8
+      </text>
     </svg>
   ),
   Webhook: () => (
@@ -81,40 +93,45 @@ const SystemIcons = {
         </linearGradient>
       </defs>
       <rect fill="url(#webhookGrad)" width="256" height="256" rx="50" />
-      <circle cx="128" cy="128" r="30" fill="#fff" />
-      <circle cx="70" cy="128" r="20" fill="#60A5FA" />
-      <circle cx="186" cy="128" r="20" fill="#60A5FA" />
-      <circle cx="128" cy="70" r="20" fill="#60A5FA" />
-      <circle cx="128" cy="186" r="20" fill="#60A5FA" />
+      <circle cx="128" cy="128" r="28" fill="#fff" />
+      <circle cx="68" cy="128" r="18" fill="#60A5FA" />
+      <circle cx="188" cy="128" r="18" fill="#60A5FA" />
+      <circle cx="128" cy="68" r="18" fill="#60A5FA" />
+      <circle cx="128" cy="188" r="18" fill="#60A5FA" />
+      <line x1="128" y1="100" x2="128" y2="68" stroke="#fff" strokeWidth="8" />
+      <line x1="100" y1="128" x2="68" y2="128" stroke="#fff" strokeWidth="8" />
+      <line x1="156" y1="128" x2="188" y2="128" stroke="#fff" strokeWidth="8" />
+      <line x1="128" y1="156" x2="128" y2="188" stroke="#fff" strokeWidth="8" />
     </svg>
   ),
   Salesforce: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#00A1E0" width="256" height="256" rx="20" />
-      <ellipse cx="100" cy="110" rx="40" ry="35" fill="#fff" />
-      <ellipse cx="150" cy="100" rx="35" ry="30" fill="#fff" />
-      <ellipse cx="130" cy="145" rx="45" ry="35" fill="#fff" />
+      <rect fill="#00A1E0" width="256" height="256" rx="25" />
+      <ellipse cx="85" cy="105" rx="35" ry="32" fill="#fff" />
+      <ellipse cx="145" cy="95" rx="38" ry="35" fill="#fff" />
+      <ellipse cx="105" cy="145" rx="40" ry="35" fill="#fff" />
+      <ellipse cx="165" cy="138" rx="32" ry="30" fill="#fff" />
     </svg>
   ),
   HubSpot: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#FF7A59" width="256" height="256" rx="30" />
-      <circle cx="180" cy="80" r="25" fill="#fff" />
-      <rect x="100" y="60" width="20" height="80" fill="#fff" />
-      <circle cx="80" cy="150" r="30" fill="#fff" />
-      <path d="M120 90 L170 70" stroke="#fff" strokeWidth="18" />
+      <rect fill="#FF7A59" width="256" height="256" rx="35" />
+      <circle cx="182" cy="78" r="22" fill="#fff" />
+      <rect x="105" y="65" width="16" height="72" fill="#fff" rx="2" />
+      <circle cx="75" cy="155" r="28" fill="#fff" />
+      <path d="M121 90 L175 72" stroke="#fff" strokeWidth="16" strokeLinecap="round" />
     </svg>
   ),
   RDStation: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
       <defs>
         <linearGradient id="rdGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#0CC" />
-          <stop offset="100%" stopColor="#099" />
+          <stop offset="0%" stopColor="#00CC99" />
+          <stop offset="100%" stopColor="#009977" />
         </linearGradient>
       </defs>
       <rect fill="url(#rdGrad)" width="256" height="256" rx="40" />
-      <text x="128" y="165" fontSize="140" fontWeight="bold" fill="#fff" textAnchor="middle" fontFamily="Arial">
+      <text x="128" y="165" fontSize="110" fontWeight="900" fill="#fff" textAnchor="middle" fontFamily="Arial, sans-serif">
         RD
       </text>
     </svg>
@@ -122,10 +139,10 @@ const SystemIcons = {
   Slack: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
       <rect fill="#4A154B" width="256" height="256" rx="50" />
-      <rect x="80" y="95" width="30" height="70" rx="15" fill="#E01E5A" />
-      <rect x="146" y="95" width="30" height="70" rx="15" fill="#36C5F0" />
-      <rect x="95" y="80" width="70" height="30" rx="15" fill="#2EB67D" />
-      <rect x="95" y="146" width="70" height="30" rx="15" fill="#ECB22E" />
+      <rect x="82" y="98" width="26" height="62" rx="13" fill="#E01E5A" />
+      <rect x="148" y="98" width="26" height="62" rx="13" fill="#36C5F0" />
+      <rect x="98" y="82" width="62" height="26" rx="13" fill="#2EB67D" />
+      <rect x="98" y="148" width="62" height="26" rx="13" fill="#ECB22E" />
     </svg>
   ),
 };
