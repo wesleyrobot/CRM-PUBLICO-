@@ -39,49 +39,55 @@ interface Stats {
   total_errors: number;
 }
 
-// Ícones SVG dos logos oficiais
+// Ícones SVG dos logos oficiais - Cores e designs baseados nas marcas originais
 const SystemIcons = {
   Zapier: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#FF4A00" width="256" height="256" rx="30" />
-      <path
-        fill="#fff"
-        d="M128 60L185 128L128 196L71 128z M128 85v86 M85 128h86"
-        strokeWidth="0"
-      />
+      {/* Zapier Official Orange #FF4F00 */}
+      <rect fill="#FFFFFF" width="256" height="256" rx="0" />
+      <g transform="translate(128, 128)">
+        {/* Logo Zapier - Z estilizado laranja */}
+        <path
+          fill="#FF4F00"
+          d="M-60,-40 L60,-40 L-20,0 L60,0 L60,10 L-60,10 L20,50 L-60,50 L-60,40 L40,40 L-20,0 L-60,0 Z"
+        />
+      </g>
     </svg>
   ),
   Make: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <defs>
-        <linearGradient id="makeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6B21F5" />
-          <stop offset="100%" stopColor="#A855F7" />
-        </linearGradient>
-      </defs>
-      <rect fill="url(#makeGrad)" width="256" height="256" rx="50" />
-      <circle cx="128" cy="70" r="18" fill="#fff" />
-      <circle cx="80" cy="100" r="18" fill="#fff" />
-      <circle cx="176" cy="100" r="18" fill="#fff" />
-      <circle cx="128" cy="128" r="22" fill="#fff" />
-      <circle cx="70" cy="156" r="18" fill="#fff" />
-      <circle cx="186" cy="156" r="18" fill="#fff" />
-      <circle cx="128" cy="186" r="18" fill="#fff" />
+      {/* Make (ex-Integromat) - Purple #B02DE9 */}
+      <rect fill="#FFFFFF" width="256" height="256" rx="0" />
+      <g transform="translate(128, 128)">
+        {/* Logo Make - M estilizado roxo */}
+        <path
+          fill="#B02DE9"
+          d="M-50,-45 L-50,45 L-35,45 L-35,-15 L0,25 L35,-15 L35,45 L50,45 L50,-45 L35,-45 L0,0 L-35,-45 Z"
+        />
+      </g>
+      {/* Efeito de dominó cascata */}
+      <circle cx="85" cy="75" r="8" fill="#B02DE9" opacity="0.4" />
+      <circle cx="105" cy="85" r="8" fill="#B02DE9" opacity="0.5" />
+      <circle cx="125" cy="95" r="8" fill="#B02DE9" opacity="0.6" />
     </svg>
   ),
   N8n: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#EA4B71" width="256" height="256" rx="45" />
-      <path
-        fill="#fff"
-        d="M70 75 L110 75 L110 145 Q110 165 90 165 L70 165z M145 110 L185 110 L185 165 Q185 180 170 180 L145 180z"
-      />
-      <text x="93" y="155" fontSize="85" fontWeight="900" fill="#fff" fontFamily="Arial, sans-serif">
-        n
-      </text>
-      <text x="158" y="175" fontSize="65" fontWeight="900" fill="#fff" fontFamily="Arial, sans-serif">
-        8
-      </text>
+      {/* n8n Official Pink/Coral #EA4B71 */}
+      <rect fill="#FFFFFF" width="256" height="256" rx="0" />
+      <g transform="translate(128, 128)">
+        {/* Nós conectados do n8n */}
+        <circle cx="-50" cy="-30" r="18" fill="#EA4B71" />
+        <circle cx="50" cy="-30" r="18" fill="#EA4B71" />
+        <circle cx="0" cy="30" r="18" fill="#EA4B71" />
+        <line x1="-50" y1="-30" x2="0" y2="30" stroke="#EA4B71" strokeWidth="6" />
+        <line x1="50" y1="-30" x2="0" y2="30" stroke="#EA4B71" strokeWidth="6" />
+        <line x1="-50" y1="-30" x2="50" y2="-30" stroke="#EA4B71" strokeWidth="6" />
+        {/* Texto n8n */}
+        <text x="0" y="75" fontSize="32" fontWeight="bold" fill="#101330" textAnchor="middle" fontFamily="Arial, sans-serif">
+          n8n
+        </text>
+      </g>
     </svg>
   ),
   Webhook: () => (
@@ -106,43 +112,59 @@ const SystemIcons = {
   ),
   Salesforce: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#00A1E0" width="256" height="256" rx="25" />
-      <ellipse cx="85" cy="105" rx="35" ry="32" fill="#fff" />
-      <ellipse cx="145" cy="95" rx="38" ry="35" fill="#fff" />
-      <ellipse cx="105" cy="145" rx="40" ry="35" fill="#fff" />
-      <ellipse cx="165" cy="138" rx="32" ry="30" fill="#fff" />
+      {/* Salesforce Official Blue #00A1E0 */}
+      <rect fill="#00A1E0" width="256" height="256" rx="0" />
+      {/* Cloud design - símbolo oficial Salesforce */}
+      <g transform="translate(128, 128)">
+        <ellipse cx="-35" cy="-10" rx="30" ry="28" fill="#fff" />
+        <ellipse cx="15" cy="-15" rx="35" ry="32" fill="#fff" />
+        <ellipse cx="-20" cy="20" rx="38" ry="32" fill="#fff" />
+        <ellipse cx="35" cy="15" rx="28" ry="26" fill="#fff" />
+        <rect x="-50" y="0" width="100" height="35" fill="#fff" />
+      </g>
     </svg>
   ),
   HubSpot: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#FF7A59" width="256" height="256" rx="35" />
-      <circle cx="182" cy="78" r="22" fill="#fff" />
-      <rect x="105" y="65" width="16" height="72" fill="#fff" rx="2" />
-      <circle cx="75" cy="155" r="28" fill="#fff" />
-      <path d="M121 90 L175 72" stroke="#fff" strokeWidth="16" strokeLinecap="round" />
+      {/* HubSpot Official Coral #FF7A59 */}
+      <rect fill="#FF7A59" width="256" height="256" rx="0" />
+      {/* Sprocket design - engrenagem HubSpot */}
+      <g transform="translate(128, 128)">
+        <circle cx="50" cy="-45" r="20" fill="#fff" />
+        <rect x="-5" y="-60" width="14" height="65" fill="#fff" rx="2" />
+        <circle cx="-50" cy="25" r="26" fill="#fff" />
+        <line x1="9" y1="-35" x2="45" y2="-50" stroke="#fff" strokeWidth="14" strokeLinecap="round" />
+      </g>
     </svg>
   ),
   RDStation: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <defs>
-        <linearGradient id="rdGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#00CC99" />
-          <stop offset="100%" stopColor="#009977" />
-        </linearGradient>
-      </defs>
-      <rect fill="url(#rdGrad)" width="256" height="256" rx="40" />
-      <text x="128" y="165" fontSize="110" fontWeight="900" fill="#fff" textAnchor="middle" fontFamily="Arial, sans-serif">
-        RD
-      </text>
+      {/* RD Station - Verde característico brasileiro */}
+      <rect fill="#FFFFFF" width="256" height="256" rx="0" />
+      <g transform="translate(128, 128)">
+        {/* Logo RD com estilo brasileiro */}
+        <circle cx="0" cy="0" r="70" fill="none" stroke="#00C88C" strokeWidth="8" />
+        <text x="0" y="15" fontSize="65" fontWeight="900" fill="#00C88C" textAnchor="middle" fontFamily="Arial, sans-serif">
+          RD
+        </text>
+      </g>
     </svg>
   ),
   Slack: () => (
     <svg viewBox="0 0 256 256" className="w-full h-full">
-      <rect fill="#4A154B" width="256" height="256" rx="50" />
-      <rect x="82" y="98" width="26" height="62" rx="13" fill="#E01E5A" />
-      <rect x="148" y="98" width="26" height="62" rx="13" fill="#36C5F0" />
-      <rect x="98" y="82" width="62" height="26" rx="13" fill="#2EB67D" />
-      <rect x="98" y="148" width="62" height="26" rx="13" fill="#ECB22E" />
+      {/* Slack Official Colors - Hashtag colorido */}
+      <rect fill="#FFFFFF" width="256" height="256" rx="0" />
+      <g transform="translate(128, 128)">
+        {/* Hashtag Slack com 4 cores oficiais */}
+        {/* Vermelho #E01E5A */}
+        <rect x="-65" y="-15" width="24" height="60" rx="12" fill="#E01E5A" />
+        {/* Azul #36C5F0 */}
+        <rect x="40" y="-15" width="24" height="60" rx="12" fill="#36C5F0" />
+        {/* Verde #2EB67D */}
+        <rect x="-15" y="-65" width="60" height="24" rx="12" fill="#2EB67D" />
+        {/* Amarelo #ECB22E */}
+        <rect x="-15" y="40" width="60" height="24" rx="12" fill="#ECB22E" />
+      </g>
     </svg>
   ),
 };
